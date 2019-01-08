@@ -10,7 +10,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "copy-readme": "cp ./README.md ./dist/lib",
-    "copy-license": "copy ./LICENSE ./dist/lib",
+    "copy-license": "cp ./LICENSE ./dist/lib",
     "copy-files": "npm run copy-readme && npm run copy-license",
     "npm_pack": "cd dist/lib && npm pack",
     "package": "npm run build_lib && npm run copy-files && npm run npm_pack"
