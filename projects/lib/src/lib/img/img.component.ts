@@ -1,5 +1,5 @@
 import {Component, OnInit, AfterViewInit, Input, ViewChild, ElementRef, OnDestroy} from '@angular/core';
-import {LibService} from '../lib.service';
+import {CIService} from '../lib.service';
 import {DomSanitizer} from '@angular/platform-browser';
 import {fromEvent, Observable, Subscription} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
@@ -102,7 +102,7 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
   imageHeight: number;
   windowInnerWidth: number = window.innerWidth;
 
-  constructor(private ciService: LibService, private _sanitizer: DomSanitizer) {
+  constructor(private ciService: CIService, private _sanitizer: DomSanitizer) {
     this.lazyLoading = ciService.config.lazyLoading;
   }
 

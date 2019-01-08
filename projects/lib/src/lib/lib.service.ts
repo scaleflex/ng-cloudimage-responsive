@@ -4,7 +4,7 @@ import {CIConfig} from './config.service';
 @Injectable({
   providedIn: 'root'
 })
-export class LibService {
+export class CIService {
   public config: any = {};
 
   constructor(ciConfig: CIConfig) {
