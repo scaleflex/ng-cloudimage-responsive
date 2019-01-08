@@ -1,27 +1,176 @@
-# NgCloudimageResponsive
+![](https://demo.cloudimg.io/width/800/none/sample.li/Cloudimage_diagram.jpeg)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
+powered by [Cloudimage](https://www.cloudimage.io/)
+([Watch the video here](https://www.youtube.com/watch?time_continue=2&v=JFZSE1vYb0k))
 
-## Development server
+## Cloudimage Angular Plugin
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Cloudimage Responsive plugin will resize, compress and accelerate images across the World in your Angular application. It leverages the HTML5 `<picture>` and `srcset` elements to deliver the right image size based on the client's screen size and pixel ratio (retina or non-retina).
 
-## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+**NOTE:** Your original (master) images should be stored on a server or storage bucket (S3, Google Cloud, Azure Blob...) reachable over HTTP or HTTPS by Cloudimage. If you want to upload your master images to Cloudimage, contact us at [hello@cloudimage.io](mailto:hello@cloudimage.io).
 
-## Build
+## Demo
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+To see the Cloudimage Responsive plugin in action, please check out the [Demo page](https://scaleflex.airstore.io/plugins/ng-cloudimage-responsive/index.html). Play with your browser's viewport size and observe your Inspector's Network tab to see how Cloudimage delivers the optimal image size to your browser, hence accelerating the overall page loading time.
 
-## Running unit tests
+## Installation
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```
+$ npm install --save ng-cloudimage-responsive
+```
 
-## Running end-to-end tests
+And then include it in your module (see app.module.ts):
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+```javascript
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { CIModule, CIService, CIConfig } from 'lib';
+import { AppComponent } from './app.component';
 
-## Further help
+const ciConfig = {
+  token: 'demo',
+  baseUrl: 'https://jolipage.airstore.io/`'
+};
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+@NgModule({
+    declarations: [ AppComponent ],
+    imports: [ BrowserModule, CIModule ],
+    providers: [
+      {provide: CIConfig, useValue: ciConfig},
+      CIService
+    ],
+    bootstrap: [ AppComponent ]
+})
+export class MyAppModule {}
+```
+
+## Simple Usage
+
+```html
+<ci-img src="img.jpg" alt="Demo image" ratio="1.5"></ci-img>
+```
+Note: as you see, using the Cloudimage plugin is very easy - just use the `ci-img` instead of the `img` tag.
+
+## Requirements
+
+To use the Cloudimage Responsive plugin, you will need a Cloudimage token. Don't worry, it only takes seconds to get one by registering [here](https://www.cloudimage.io/en/register_page). Once your token is created, you can configure it as described below. This token allows you to use 25GB of image cache and 25GB of worldwide CDN traffic per month for free.
+
+## Config
+
+### token
+
+###### Type: **String** | Default: **"demo"** | _required_
+
+Your Cloudimage customer token. [Subscribe](https://www.cloudimage.io/en/register_page) for a Cloudimage account to get one. The subscription takes less than a minute and is totally free
+
+### lazyLoading
+
+###### Type: **Bool** | Default: **true** | _required_
+
+Only load images close to the viewport
+
+### imgLoadingAnimation
+
+###### Type: **Bool** | Default: **true** | _required_
+
+Nice effect for preview transition
+
+### lazyLoadOffset
+
+###### Type: **Number** | Default: **100** | _required_
+
+Preload an image even if it's e.g. 100px below the viewport
+(user have to scroll 100px more to see this image)
+
+### filters
+
+###### Type: **String** | Default: **'n'** | _optional_
+
+Parameters like fcontrast, fpixelate, fgaussian, backtransparent,
+rotation to apply filters on your image by default
+
+### placeholderBackground
+
+###### Type: **String** | Default: **'#f4f4f4'** | _optional_
+
+Parameters like fcontrast, fpixelate, fgaussian, backtransparent,
+rotation to apply filters on your image by default
+
+### baseUrl
+
+###### Type: **String** | Default: **"/"** | _optional_
+
+Your image folder on server.
+
+
+## Image properties
+
+### src
+
+###### Type: **String**  | _required_
+
+Original image hosted on your web server.
+
+### operation/o
+
+[see doc](https://docs.cloudimage.io/go/cloudimage-documentation/en/operations/)
+
+###### Type: **String** | Default: **width** | _optional_
+
+**width** - to resize with a specific width
+
+**height** - to resize with a specific height
+
+**crop** - to crop the image at the center
+
+**fit** - to resize the image in a box and keeping the proportions of the source image
+
+**cover** - to resize the image in a box without keeping the proportions of the source image
+
+### size/s
+
+###### Type: **String/Object** | _optional_
+
+Size of an image which is used as a base for creating retina ready and responsive image element.
+
+Examples (PR - stands for your device Pixel Ratio):
+
+**[width]**: s="250" => width: 250 * PR (px); height: auto;
+
+**[width x height]**: s="125x200" => width: 125 * PR (px); height: 200 * PR (px);
+
+**[Width and height for different screen resolutions]**:
+
+s={{ xs: '50x100', sm:'100x125', md: '150x150', lg:'200x175', xl:'300x200' }}
+
+*You can drop some breakpoints, for example s={{ sm:'100x125', xl:'300x200' }}
+
+**NOTE:** if size is set to **undefined**, Cloudimage uses a special
+algorithm to detect the width of image container and set the image size
+accordingly.
+
+### filters/f
+
+[see doc](https://docs.cloudimage.io/go/cloudimage-documentation/en/filters/)
+
+###### Type: **String** | Default: **none** | _optional_
+
+Filters allow you to modify the image's apperance and can be added on top of the resizing features above.
+
+**fgrey** - apply a greyscale filter on the image
+
+**fgaussian[0..10]** - apply a gaussian blur filter on the image
+
+**fcontrast[-100..100]** - apply a contrast filter on the image
+
+**fbright[0..255]** - apply a brightness filter on the image
+
+**fpixelate[0..100]** - apply a pixelate filter on the image
+
+**fradius[0..500]** - create a radius on the corners
+
+
+***
+
+To see the full cloudimage documentation [click here](https://docs.cloudimage.io/go/cloudimage-documentation)

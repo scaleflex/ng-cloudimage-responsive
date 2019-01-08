@@ -1,0 +1,109 @@
+<div class="container">
+  <h1>
+    Cloudimage Angular Plugin
+    <img
+      class="logo"
+      src="https://think360studio.com/wp-content/uploads/2016/03/angular-js-icon.svg"
+      alt="Angular logo"
+      height="40px">
+  </h1>
+  <p>Cloudimage Responsive plugin
+    will <strong>resize</strong>, <strong>compress</strong> and <strong>accelerate</strong> images across the World
+    in your <b>Angular</b> application. It leverages the HTML5 &lt;picture&gt; and &lt;srcset&gt; elements to deliver
+    the right image size based on the client's <strong>screen size</strong> and <strong>pixel ratio</strong> (retina
+    vs non-retina).</p>
+
+  <h3 style="margin-top:40px;margin-bottom:20px;">
+    I. Responsive mode, according to image container size
+  </h3>
+</div>
+
+<ci-img [src]="images[0].src" [ratio]="images[0].ratio"></ci-img>
+
+<div class="container">
+      <pre><code>
+        <p>&lt;ci-img [src]="images[0].src" [ratio]="images[0].ratio"/&gt;</p>
+      </code></pre>
+
+  <p class="description">
+    In this example, image width equals to browser window screen width and is used for calculations.
+    Image will be downloaded according to the closest limit (25px, 50px, 100px, 100px * n ). Limit is used for cache
+    reasons.
+  </p>
+
+  Let's see the numbers:<br/>
+
+  <p class="numbers">
+    <b>original image:</b> <i>4.8mb</i> <a href="https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg"
+                                           target="_blank">link</a><br/>
+    mobile sizes:<br/>
+    <b>400px screen</b> with 1x pixel ratio: <i>31.5kb</i> <a
+    href="https://demo.cloudimg.io/width/400/q80.foil1/https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg"
+    target="_blank">link</a><br/>
+    <b>400px screen</b> with 2x(Retina) pixel ratio: <i>105kb</i> <a
+    href="https://demo.cloudimg.io/width/800/q80.foil1/https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg"
+    target="_blank">link</a><br/>
+    laptop sizes:<br/>
+    <b>1400px screen</b> with 1x pixel ratio: <i>300kb</i> <a
+    href="https://demo.cloudimg.io/width/1400/q80.foil1/https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg"
+    target="_blank">link</a><br/>
+    <b>1400px screen</b> with 2x(Retina) pixel ratio: <i>1mb</i> <a
+    href="https://demo.cloudimg.io/width/2800/q80.foil1/https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg"
+    target="_blank">link</a><br/>
+  </p>
+
+  <p class="description" style="margin-top:15px;">
+    In the examples below, the images will be downloaded according to the closest limit for their container
+  </p>
+
+  <div class="row images-in-columns">
+    <div class="col-12">
+      <ci-img [src]="images[8].src" [ratio]="images[8].ratio"></ci-img>
+    </div>
+
+    <div *ngFor="let image of images.slice(1, 7)" class="col-6">
+      <ci-img [src]="image.src" [ratio]="image.ratio"></ci-img>
+      original: <i>{{image.original_size}}</i>
+        <a href="{{'https://cloudimage.public.airstore.io/demo/' + image.src}}" target="_blank">link</a><br/>
+    </div>
+  </div>
+
+  <h3 style="margin-top:40px;margin-bottom:20px;">
+    II. Manual mode
+  </h3>
+
+  <div class="row">
+    <div class="col-md-6 col-lg-7">
+      <ci-img
+        [src]="images[18].src"
+        [operation]="'crop'"
+        [size]="{ xl: '1600x1000', lg: '1400x1200', md: '1000x1350', sm: '800x400' }"
+      ></ci-img>
+      <small>
+        original: <i>{{images[18].original_size}}</i> <a
+        href="{{'https://cloudimage.public.airstore.io/demo/' + images[18].src}}" target="_blank">link</a><br/>
+      </small>
+    </div>
+    <div class="col-md-6 col-lg-5 desc-wrapper-with-media-query">
+      <h4>You can control your image size/ratio/crop with media query breakpoints</h4>
+      <p>Resize your browser window to see how it works</p>
+      <pre><code>
+&lt;ci-img
+  operation="crop"
+  [src]="images[18].src"
+  [size]="&#123;
+    xl: '1600x1000',
+    lg: '1400x1200',
+    md: '1000x1350',
+    sm: '800x400'
+  &#125;"
+&lt;/ci-img&gt;
+      </code></pre>
+    </div>
+  </div>
+
+  <div style="margin-top:40px;">
+    <h4>Any questions?</h4>
+    <p>Contact us at hello@cloudimage.io, our image resizing experts will be happy to help!</p>
+  </div>
+</div>

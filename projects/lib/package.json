@@ -1,0 +1,20 @@
+{
+  "name": "ng-cloudimage-responsive",
+  "version": "0.0.1",
+  "description": "Cloudimage responsive plugin will make your website load the exact image size you need depending on your user's screen size. Multiple pixel ratios are supported.",
+  "peerDependencies": {
+    "@angular/common": "^7.0.0",
+    "@angular/core": "^7.0.0",
+    "rxjs": "^6.0.0"
+  },
+  "dependencies": {
+    "ng-lazyload-image": "^5.0.0"
+  },
+  "keywords": [
+    "angular", "image", "images", "cloudimage", "responsive images", "lazy loading", "web acceleration", "image management", "image resizing",
+    "image compression", "image optimization", "image CDN", "image CDN", "webp", "jpeg xr", "jpg optimization",
+    "image resizing and CDN", "crop", "resize"
+  ],
+  "author": "scaleflex",
+  "license": "MIT"
+}

@@ -5,9 +5,15 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build_lib": "ng build lib",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "copy-readme": "cp ./README.md ./dist/lib",
+    "copy-license": "copy ./LICENSE ./dist/lib",
+    "copy-files": "npm run copy-readme",
+    "npm_pack": "cd dist/lib && npm pack",
+    "package": "npm run build_lib && npm run copy-files && npm run npm_pack"
   },
   "private": true,
   "dependencies": {
@@ -20,11 +26,14 @@
     "@angular/platform-browser-dynamic": "~7.1.0",
     "@angular/router": "~7.1.0",
     "core-js": "^2.5.4",
+    "ng-lazyload-image": "^5.0.0",
     "rxjs": "~6.3.3",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
+    "@angular-devkit/build-angular": "~0.11.0",
+    "@angular-devkit/build-ng-packagr": "~0.11.0",
     "@angular/cli": "~7.1.4",
     "@angular/compiler-cli": "~7.1.0",
     "@angular/language-service": "~7.1.0",
@@ -39,8 +48,11 @@
     "karma-coverage-istanbul-reporter": "~2.0.1",
     "karma-jasmine": "~1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "ng-packagr": "^4.2.0",
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",
+    "tsickle": ">=0.29.0",
+    "tslib": "^1.9.0",
     "tslint": "~5.11.0",
     "typescript": "~3.1.6"
   }
