@@ -30,7 +30,7 @@ import { AppComponent } from './app.component';
 
 const ciConfig = {
   token: 'demo',
-  baseUrl: 'https://jolipage.airstore.io/`'
+  baseUrl: 'https://jolipage.airstore.io/'
 };
 
 @NgModule({
