@@ -7,6 +7,11 @@
     "@angular/core": "^7.0.0",
     "rxjs": "^6.0.0"
   },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/scaleflex/ng-cloudimage-responsive"
+  },
+  "homepage": "https://github.com/scaleflex/ng-cloudimage-responsive#readme",
   "dependencies": {
     "ng-lazyload-image": "^5.0.0"
   },
