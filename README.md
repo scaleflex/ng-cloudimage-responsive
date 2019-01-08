@@ -25,7 +25,7 @@ And then include it in your module (see app.module.ts):
 ```javascript
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { CIModule, CIService, CIConfig } from 'lib';
+import { CIModule, CIService, CIConfig } from 'ng-cloudimage-responsive';
 import { AppComponent } from './app.component';
 
 const ciConfig = {
