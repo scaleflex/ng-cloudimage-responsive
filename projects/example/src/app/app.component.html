@@ -35,21 +35,21 @@
 
   <p class="numbers">
     <b>original image:</b> <i>4.8mb</i> <a href="https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg"
-                                           target="_blank">link</a><br/>
+                                           target="_blank"> link</a><br/>
     mobile sizes:<br/>
     <b>400px screen</b> with 1x pixel ratio: <i>31.5kb</i> <a
     href="https://demo.cloudimg.io/width/400/q80.foil1/https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg"
-    target="_blank">link</a><br/>
+    target="_blank"> link</a><br/>
     <b>400px screen</b> with 2x(Retina) pixel ratio: <i>105kb</i> <a
     href="https://demo.cloudimg.io/width/800/q80.foil1/https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg"
-    target="_blank">link</a><br/>
+    target="_blank"> link</a><br/>
     laptop sizes:<br/>
     <b>1400px screen</b> with 1x pixel ratio: <i>300kb</i> <a
     href="https://demo.cloudimg.io/width/1400/q80.foil1/https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg"
-    target="_blank">link</a><br/>
+    target="_blank"> link</a><br/>
     <b>1400px screen</b> with 2x(Retina) pixel ratio: <i>1mb</i> <a
     href="https://demo.cloudimg.io/width/2800/q80.foil1/https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg"
-    target="_blank">link</a><br/>
+    target="_blank"> link</a><br/>
   </p>
 
   <p class="description" style="margin-top:15px;">
@@ -64,7 +64,7 @@
     <div *ngFor="let image of images.slice(1, 7)" class="col-6">
       <ci-img [src]="image.src" [ratio]="image.ratio"></ci-img>
       original: <i>{{image.original_size}}</i>
-        <a href="{{'https://cloudimage.public.airstore.io/demo/' + image.src}}" target="_blank">link</a><br/>
+        <a href="{{'https://cloudimage.public.airstore.io/demo/' + image.src}}" target="_blank"> link</a><br/>
     </div>
   </div>
 
@@ -81,7 +81,7 @@
       ></ci-img>
       <small>
         original: <i>{{images[18].original_size}}</i> <a
-        href="{{'https://cloudimage.public.airstore.io/demo/' + images[18].src}}" target="_blank">link</a><br/>
+        href="{{'https://cloudimage.public.airstore.io/demo/' + images[18].src}}" target="_blank"> link</a><br/>
       </small>
     </div>
     <div class="col-md-6 col-lg-5 desc-wrapper-with-media-query">
