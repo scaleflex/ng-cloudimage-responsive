@@ -2,7 +2,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 
 import {AppComponent} from './app.component';
-import {CIModule, CIService, CIConfig} from 'lib';
+import {CIModule, CIConfig} from 'lib';
 
 const ciConfig = {
   token: 'demo',
@@ -22,8 +22,7 @@ const ciConfig = {
     CIModule
   ],
   providers: [
-    {provide: CIConfig, useValue: ciConfig},
-    CIService
+    {provide: CIConfig, useValue: ciConfig}
   ],
   bootstrap: [AppComponent]
 })
