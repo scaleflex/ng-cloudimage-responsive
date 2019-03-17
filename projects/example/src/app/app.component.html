@@ -84,7 +84,7 @@
       <ci-img
         [src]="images[18].src"
         [operation]="'crop'"
-        [size]="{ xl: '1600x1000', lg: '1400x1200', md: '1000x1350', sm: '800x400' }"
+        [size]="'sm 400x200, (min-width: 620px) 200x60, md 250x350, lg 350x300, xl 400x250'"
       ></ci-img>
       <small>
         original: <i>{{images[18].original_size}}</i> <a
@@ -98,12 +98,13 @@
 &lt;ci-img
   operation="crop"
   [src]="images[18].src"
-  [size]="&#123;
-    xl: '1600x1000',
-    lg: '1400x1200',
-    md: '1000x1350',
-    sm: '800x400'
-  &#125;"
+  [size]="'
+    sm 400x200,
+    (min-width: 620px) 200x60,
+    md 250x350,
+    lg 350x300,
+    xl 400x250
+  '"
 &lt;/ci-img&gt;
       </code></pre>
     </div>

@@ -38,37 +38,18 @@ export class CIService {
       filters,
       placeholderBackground,
       baseUrl,
-      presets: presets ? this.getPresets(presets, 'presets') :
+      presets: presets ? presets :
         {
-          xs: 575,  // up to 576    PHONE
-          sm: 767,  // 577 - 768    PHABLET
-          md: 991,  // 769 - 992    TABLET
-          lg: 1199, // 993 - 1200   SMALL_LAPTOP_SCREEN
-          xl: 3000  // from 1200    USUALSCREEN
+          xs: '(max-width: 575px)',  // to 575       PHONE
+          sm: '(min-width: 576px)',  // 576 - 767    PHABLET
+          md: '(min-width: 768px)',  // 768 - 991    TABLET
+          lg: '(min-width: 992px)',  // 992 - 1199   SMALL_LAPTOP_SCREEN
+          xl: '(min-width: 1200px)'  // from 1200    USUALSCREEN
         },
-      order: presets ? this.getPresets(presets, 'order') : ['xl', 'lg', 'md', 'sm', 'xs'],
       queryString,
       innerWidth: window.innerWidth,
       // isChrome: /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)
     };
-  }
-
-  getPresets(value = '', type) {
-    const splittedValues = value.split('|');
-    const result = {presets: {}, order: []};
-
-    for (let i = 0; i < splittedValues.length; i++) {
-      const splittedParam = splittedValues[i] && splittedValues[i].split(':');
-      const prop = splittedParam[0] && splittedParam[0].trim();
-      const val = splittedParam[1] && splittedParam[1].trim();
-
-      if (prop && val) {
-        result.presets[prop] = val;
-        result.order.unshift(prop);
-      }
-    }
-
-    return result[type];
   }
 
   getParentWidth(img, config) {
@@ -100,10 +81,10 @@ export class CIService {
       width = parentNode.getBoundingClientRect().width;
     } while (parentNode && !width);
 
-    const letPadding = width && parentNode && window.parseInt(window.getComputedStyle(parentNode).paddingLeft, 10);
-    const rightPadding = window.parseInt(window.getComputedStyle(parentNode).paddingRight, 10);
+    const letPadding = width && parentNode && parseInt(window.getComputedStyle(parentNode).paddingLeft, 10);
+    const rightPadding = parseInt(window.getComputedStyle(parentNode).paddingRight, 10);
 
-    return width + (width ? (- letPadding - rightPadding) : 0);
+    return width + (width ? (-letPadding - rightPadding) : 0);
   }
 
   getSizeLimit(currentSize) {
@@ -118,7 +99,13 @@ export class CIService {
   }
 
   checkOnMedia(size) {
-    return size && typeof size === 'object';
+    try {
+      const array = size.split(',');
+
+      return array.length > 1;
+    } catch (e) {
+      return false;
+    }
   }
 
   checkIfRelativeUrlPath(src) {
@@ -160,37 +147,39 @@ export class CIService {
     const sources = [];
 
     if (isAdaptive) {
-      const orderFiltered = [];
-
-      for (let i = 0; i < config.order.length; i++) {
-        const nextSize = size[config.order[i]];
-
-        if (nextSize) {
-          orderFiltered.unshift(config.order[i]);
-        }
-      }
-
-      for (let i = 0; i < orderFiltered.length; i++) {
-        const isLast = !(i < orderFiltered.length - 1);
-        const nextSizeType = isLast ? orderFiltered[i - 1] : orderFiltered[i];
-        let nextSize = size[orderFiltered[i]];
-
+      size.forEach(({ size: nextSize, media: mediaQuery}) => {
         if (isPreview) {
-          nextSize = nextSize.split('x').map(item => item / 5).join('x');
+          nextSize = nextSize.split('x').map(sizeNext => sizeNext / 5).join('x');
+          filters = 'q10.foil1';
         }
 
-        const srcSet = this.generateSrcset(operation, nextSize, filters, imgSrc, config);
-        const mediaQuery = '(' + (isLast ? 'min' : 'max') + '-width: ' + (config.presets[nextSizeType] + (isLast ? 1 : 0)) + 'px)';
-
-        sources.push({mediaQuery, srcSet});
-      }
+        sources.push({ mediaQuery, srcSet: this.generateSrcset(operation, nextSize, filters, imgSrc, config) });
+      });
     } else {
+      if (isPreview) {
+        size = size.split('x').map(sizeNext => sizeNext / 5).join('x');
+        filters = 'q10.foil1';
+      }
+
       sources.push({
-        srcSet: this.generateSrcset(operation, size.split('x').map(item => item / 5).join('x'), 'q10.foil1', imgSrc, config)
+        srcSet: this.generateSrcset(operation, size, filters, imgSrc, config)
       });
     }
-
     return sources;
+  }
+
+  getAdaptiveSize(size, config) {
+    const arrayOfSizes = size.split(',');
+    const sizes = [];
+
+    arrayOfSizes.forEach(string => {
+      const groups = string.match(/((?<variable>[a-z_][a-z_]*)|(?<media>\([\S\s]*\)))\s*(?<size>[0-9xp]*)/).groups;
+      const media = groups.media ? groups.media : config.presets[groups.variable];
+
+      sizes.push({ media, size: groups.size });
+    });
+
+    return sizes;
   }
 
   generateSrcset(operation, size, filters, imgSrc, config) {
@@ -217,25 +206,8 @@ export class CIService {
     let width, height;
 
     if (typeof size === 'object') {
-      const breakPoint = this.getBreakPoint(config);
-      let orderIndex = config.order.indexOf(breakPoint);
-      let breakPointSize = null;
-
-      do {
-        const nextBreakpoint = config.order[orderIndex];
-        breakPointSize = size[nextBreakpoint];
-        orderIndex--;
-      } while (!breakPointSize && orderIndex >= 0);
-
-      if (!breakPointSize) {
-        let orderIndexStepTwo = config.order.indexOf(breakPoint);
-
-        do {
-          const nextBreakpoint = config.order[orderIndexStepTwo];
-          breakPointSize = size[nextBreakpoint];
-          orderIndexStepTwo++;
-        } while (!breakPointSize && orderIndexStepTwo <= config.order.length);
-      }
+      const breakPointSource = this.getBreakPoint(size);
+      const breakPointSize = breakPointSource ? breakPointSource.size : size[0].size;
 
       [width, height] = breakPointSize.toString().split('x');
     } else {
@@ -249,11 +221,7 @@ export class CIService {
     return null;
   }
 
-  getBreakPoint(config) {
-    const {presets, order} = config;
-    const innerWidth = window.innerWidth;
-    const prevBreakPointLimit = order.findIndex(item => presets[item] < innerWidth);
-
-    return order[prevBreakPointLimit - 1] || order[prevBreakPointLimit] || order[order.length - 1];
+  getBreakPoint(size) {
+    return [...size].reverse().find(item => matchMedia(item.media).matches);
   }
 }

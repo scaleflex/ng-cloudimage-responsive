@@ -23,14 +23,14 @@ export class AppComponent {
       original_size: '0.5mb'
     },
     {
-      src: 'dino-reichmuth-9.jpg',
-      ratio: 6.616 / 3.744,
-      original_size: '9.7mb'
+      src: 'tim-patch.jpg',
+      ratio: 5.464 / 3.640,
+      original_size: '7.5mb'
     },
     {
-      src: 'ishan-seefromthesky.jpg',
-      ratio: 5.464 / 3.070,
-      original_size: '4.2mb'
+      src: 'veeterzy.jpg',
+      ratio: 5.760 / 3.840,
+      original_size: '8.5mb'
     },
     {
       src: 'dino-reichmuth.jpg',
@@ -83,14 +83,15 @@ export class AppComponent {
       original_size: '8.2mb'
     },
     {
-      src: 'tim-patch.jpg',
-      ratio: 5.464 / 3.640,
-      original_size: '7.5mb'
+      src: 'dino-reichmuth-9.jpg',
+      ratio: 6.616 / 3.744,
+      b: 1.76,
+      original_size: '9.7mb'
     },
     {
-      src: 'veeterzy.jpg',
-      ratio: 5.760 / 3.840,
-      original_size: '8.5mb'
+      src: 'ishan-seefromthesky.jpg',
+      ratio: 5.464 / 3.070,
+      original_size: '4.2mb'
     },
     {
       src: 'dino-reichmuth-1.jpg',

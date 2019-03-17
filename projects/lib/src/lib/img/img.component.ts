@@ -19,10 +19,16 @@ import {debounceTime} from 'rxjs/operators';
           #imgElem
           *ngIf="isProcessed">
           <source
-            *ngFor="let source of (!isPreview ? sources : (isPreviewLoaded ? sources : previewSources))"
+            *ngFor="let source of getRestSources()"
             [media]="source.mediaQuery || ''"
             [attr.lazyLoad]="source.srcSet || ''"
             [srcset]="source.srcSet || ''"
+            (load)="onImageLoad()"
+          />
+          <source
+            *ngIf="getFirstSource()"
+            [attr.lazyLoad]="firstSource.srcSet || ''"
+            [srcset]="firstSource.srcSet || ''"
             (load)="onImageLoad()"
           />
           <img
@@ -47,9 +53,16 @@ import {debounceTime} from 'rxjs/operators';
           #imgElem
           *ngIf="isProcessed">
           <source
-            *ngFor="let source of (!isPreview ? sources : (isPreviewLoaded ? sources : previewSources))"
+            *ngFor="let source of restSources"
             [media]="source.mediaQuery || ''"
+            [attr.lazyLoad]="source.srcSet || ''"
             [srcset]="source.srcSet || ''"
+            (load)="onImageLoad()"
+          />
+          <source
+            *ngIf="firstSource"
+            [attr.lazyLoad]="firstSource.srcSet || ''"
+            [srcset]="firstSource.srcSet || ''"
             (load)="onImageLoad()"
           />
           <img
@@ -87,6 +100,8 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
   resizeSubscription$: Subscription;
   cloudimageUrl = '';
   sources = [];
+  firstSource = null;
+  restSources = [];
   isLoaded = false;
   isProcessed = false;
   isPreview: boolean;
@@ -129,15 +144,18 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
     const {config} = this.ciService;
     const operation = this.operation || this.o || config.operation;
     const parentContainerWidth = this.ciService.getParentWidth(imgNode, config);
-    const size = this.size || this.s || config.size || parentContainerWidth;
+    let size = this.size || this.s || config.size || parentContainerWidth;
     const filters = this.filters || this.f || config.filters;
     const isAdaptive = this.ciService.checkOnMedia(size);
+
+    size = isAdaptive ? this.ciService.getAdaptiveSize(size, config) : size;
+
     const isRelativeUrlPath = this.ciService.checkIfRelativeUrlPath(this.src);
     const imgSrc = this.ciService.getImgSrc(this.src, isRelativeUrlPath, config.baseUrl);
     const resultSize = isAdaptive ? size : this.ciService.getSizeAccordingToPixelRatio(size);
     this.isPreview = !config.isChrome && (parentContainerWidth > 400) && config.lazyLoading;
     this.cloudimageUrl = isAdaptive ?
-      this.ciService.generateUrl('width', parentContainerWidth, filters, imgSrc, config) :
+      this.ciService.generateUrl('width', this.ciService.getSizeAccordingToPixelRatio(parentContainerWidth), filters, imgSrc, config) :
       this.ciService.generateUrl(operation, resultSize, filters, imgSrc, config);
     this.sources = isAdaptive ?
       this.ciService.generateSources(operation, resultSize, filters, imgSrc, isAdaptive, config, false) : [];
@@ -178,12 +196,27 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  getRestSources() {
+    const resultSources = [...(!this.isPreview ? this.sources : (this.isPreviewLoaded ? this.sources : this.previewSources))];
+
+    return resultSources.slice(1).reverse();
+  }
+
+  getFirstSource() {
+    const resultSources = [...(!this.isPreview ? this.sources : (this.isPreviewLoaded ? this.sources : this.previewSources))];
+    this.firstSource = resultSources[0];
+
+    return resultSources[0];
+  }
+
   getPositionStyle() {
     return this._sanitizer.bypassSecurityTrustStyle(this.isRatio ? 'absolute' : 'relative');
   }
 
   getImgHeight() {
-    return this._sanitizer.bypassSecurityTrustStyle(this.isRatio ? '100%' : 'auto');
+    // todo check if we need 100% height
+    // return this._sanitizer.bypassSecurityTrustStyle(this.isRatio ? '100%' : 'auto');
+    return this._sanitizer.bypassSecurityTrustStyle(this.isRatio ? 'auto' : 'auto');
   }
 
   getTransformStyle() {
@@ -241,7 +274,7 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
     const {config} = this.ciService;
     let result = 'transparent';
 
-    if (this.isRatio) {
+    if (this.isRatio && !this.isPreviewLoaded && !this.isLoaded) {
       result = config.placeholderBackground;
     }
 
