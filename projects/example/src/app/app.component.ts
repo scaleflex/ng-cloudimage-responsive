@@ -1,12 +1,11 @@
-import {Component, OnInit} from '@angular/core';
-import {CIService} from 'lib';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   images = [
     {
       src: 'magnus-lindvall.jpg',
@@ -104,10 +103,4 @@ export class AppComponent implements OnInit {
       original_size: '11mb'
     }
   ];
-
-  constructor() {
-  }
-
-  ngOnInit() {
-  }
 }

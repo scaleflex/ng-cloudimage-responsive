@@ -12,7 +12,7 @@ import {debounceTime} from 'rxjs/operators';
     <ng-container [ngSwitch]="lazyLoading">
       <ng-container *ngSwitchCase="true">
         <picture
-          class="{{class + ' cloudimage-image-picture cloudimage-image-' + (isLoaded ? 'loaded' : 'loading')}}"
+          [class]="class + ' cloudimage-image-picture cloudimage-image-' + (isLoaded ? 'loaded' : 'loading')"
           style="display:block;width:100%;overflow:hidden;position:relative;"
           [style.paddingBottom]="getPicturePaddingBottom()"
           [style.background]="getPictureBackground()"
@@ -40,7 +40,7 @@ import {debounceTime} from 'rxjs/operators';
       </ng-container>
       <div *ngSwitchCase="false">
         <picture
-          class="{{class + ' cloudimage-image-picture cloudimage-image-' + (isLoaded ? 'loaded' : 'loading')}}"
+          [class]="class + ' cloudimage-image-picture cloudimage-image-' + (isLoaded ? 'loaded' : 'loading')"
           style="display:block;width:100%;overflow:hidden;position:relative;"
           [style.paddingBottom]="getPicturePaddingBottom()"
           [style.background]="getPictureBackground()"
@@ -71,7 +71,7 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('imgElem') imgElem: ElementRef;
   @ViewChild('pictureElem') pictureElem: ElementRef;
   @Input() src: string;
-  @Input() class: string;
+  @Input() class: string = '';
   @Input() alt: string;
   @Input() operation: string;
   @Input() o: string;
@@ -113,9 +113,7 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.resizeObservable$ = fromEvent(window, 'resize').pipe(debounceTime(500));
     this.resizeSubscription$ = this.resizeObservable$.subscribe(() => {
-      if (this.isAdaptive) {
-        this.processImage();
-      } else if (this.windowInnerWidth < window.innerWidth) {
+      if (this.isAdaptive || this.windowInnerWidth < window.innerWidth) {
         this.processImage();
       }
       this.windowInnerWidth = window.innerWidth;

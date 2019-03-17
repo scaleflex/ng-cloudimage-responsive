@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
-import {CIConfig} from './config.service';
+import {CIConfig} from './config.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CIService {
-  public config: any = {};
+  config: any = {};
 
   constructor(ciConfig: CIConfig) {
     const {
@@ -71,7 +71,7 @@ export class CIService {
     return result[type];
   }
 
-  public getParentWidth(img, config) {
+  getParentWidth(img, config) {
     if (!(img && img.parentElement && img.parentElement.getBoundingClientRect) && !(img && img.width)) {
       return config.width;
     }
@@ -130,18 +130,19 @@ export class CIService {
                                                 : '3600';
   }
 
-  public checkOnMedia(size) {
+  checkOnMedia(size) {
     return size && typeof size === 'object';
   }
 
-  public checkIfRelativeUrlPath(src) {
+  checkIfRelativeUrlPath(src) {
     if (src.indexOf('//') === 0) {
       src = window.location.protocol + src;
     }
+
     return (src.indexOf('http://') !== 0 && src.indexOf('https://') !== 0 && src.indexOf('//') !== 0);
   }
 
-  public getImgSrc(src, isRelativeUrlPath = false, baseUrl = '') {
+  getImgSrc(src, isRelativeUrlPath = false, baseUrl = '') {
     if (isRelativeUrlPath) {
       return baseUrl + src;
     }
@@ -149,7 +150,7 @@ export class CIService {
     return src;
   }
 
-  public getSizeAccordingToPixelRatio(size) {
+  getSizeAccordingToPixelRatio(size) {
     const splittedSizes = size.toString().split('x');
     const result = [];
 
@@ -160,7 +161,7 @@ export class CIService {
     return result.join('x');
   }
 
-  public generateUrl(operation, size, filters, imgSrc, config) {
+  generateUrl(operation, size, filters, imgSrc, config) {
     const {ultraFast, token, container, queryString} = config;
     const isUltraFast = ultraFast ? 'https://scaleflex.ultrafast.io/' : 'https://';
     const cloudUrl = isUltraFast + token + '.' + container + '/';
@@ -168,7 +169,7 @@ export class CIService {
     return cloudUrl + operation + '/' + size + '/' + filters + '/' + imgSrc + queryString;
   }
 
-  public generateSources(operation, size, filters, imgSrc, isAdaptive, config, isPreview) {
+  generateSources(operation, size, filters, imgSrc, isAdaptive, config, isPreview) {
     const sources = [];
 
     if (isAdaptive) {
@@ -206,8 +207,7 @@ export class CIService {
   }
 
   generateSrcset(operation, size, filters, imgSrc, config) {
-    const imgWidth = size.toString().split('x')[0];
-    const imgHeight = size.toString().split('x')[1];
+    const [imgWidth, imgHeight] = size.toString().split('x');
 
     return this.generateImgSrc(operation, filters, imgSrc, imgWidth, imgHeight, 1, config);
   }
@@ -226,7 +226,7 @@ export class CIService {
       .replace('///', '/');
   }
 
-  public getRatioBySize(size, config) {
+  getRatioBySize(size, config) {
     let width, height;
 
     if (typeof size === 'object') {
@@ -250,11 +250,9 @@ export class CIService {
         } while (!breakPointSize && orderIndexStepTwo <= config.order.length);
       }
 
-      width = breakPointSize.toString().split('x')[0];
-      height = breakPointSize.toString().split('x')[1];
+      [width, height] = breakPointSize.toString().split('x');
     } else {
-      width = size.toString().split('x')[0];
-      height = size.toString().split('x')[1];
+      [width, height] = size.toString().split('x');
     }
 
     if (width && height) {
