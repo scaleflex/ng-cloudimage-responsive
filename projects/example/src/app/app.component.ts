@@ -3,13 +3,35 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css', '../assets/fonts/helvetica-neue.css']
 })
 export class AppComponent {
+  initialization = `import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { CIModule, CIConfig } from 'ng-cloudimage-responsive';
+import { AppComponent } from './app.component';
+
+const ciConfig = {
+  token: 'demo',
+  baseUrl: 'https://jolipage.airstore.io/'
+};
+
+@NgModule({
+    declarations: [ AppComponent ],
+    imports: [ BrowserModule, CIModule ],
+    providers: [
+      {provide: CIConfig, useValue: ciConfig}
+    ],
+    bootstrap: [ AppComponent ]
+})
+export class MyAppModule {}`;
+
+  implement = `<ci-img src="img.jpg" alt="Demo image" ratio="1.5"></ci-img>`;
+
   images = [
     {
-      src: 'magnus-lindvall.jpg',
-      ratio: 4.896 / 3.264,
+      src: 'https://cloudimage.public.airstore.io/demo/luca-bravo-121932.jpg',
+      ratio: 4.538 / 1.932,
       original_size: '4.8mb'
     },
     {
@@ -104,4 +126,8 @@ export class AppComponent {
       original_size: '11mb'
     }
   ];
+
+  getDevicePixelRatio() {
+    return Math.round(window.devicePixelRatio || 1);
+  }
 }
