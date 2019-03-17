@@ -100,7 +100,10 @@ export class CIService {
       width = parentNode.getBoundingClientRect().width;
     } while (parentNode && !width);
 
-    return width;
+    const letPadding = width && parentNode && window.parseInt(window.getComputedStyle(parentNode).paddingLeft, 10);
+    const rightPadding = window.parseInt(window.getComputedStyle(parentNode).paddingRight, 10);
+
+    return width + (width ? (- letPadding - rightPadding) : 0);
   }
 
   getSizeLimit(currentSize) {
