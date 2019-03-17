@@ -30,7 +30,7 @@ export class MyAppModule {}`;
 
   images = [
     {
-      src: 'https://cloudimage.public.airstore.io/demo/luca-bravo-121932.jpg',
+      src: 'luca-bravo-121932.jpg',
       ratio: 4.538 / 1.932,
       original_size: '4.8mb'
     },
