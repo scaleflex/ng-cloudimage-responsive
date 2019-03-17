@@ -30,7 +30,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 var CIConfig = /** @class */ (function () {
     function CIConfig() {
@@ -40,7 +40,7 @@ var CIConfig = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 var CIService = /** @class */ (function () {
     function CIService(ciConfig) {
@@ -59,53 +59,22 @@ var CIService = /** @class */ (function () {
             filters: filters,
             placeholderBackground: placeholderBackground,
             baseUrl: baseUrl,
-            presets: presets ? this.getPresets(presets, 'presets') :
+            presets: presets ? presets :
                 {
-                    xs: 575,
-                    // up to 576    PHONE
-                    sm: 767,
-                    // 577 - 768    PHABLET
-                    md: 991,
-                    // 769 - 992    TABLET
-                    lg: 1199,
-                    // 993 - 1200   SMALL_LAPTOP_SCREEN
-                    xl: 3000 // from 1200    USUALSCREEN
+                    xs: '(max-width: 575px)',
+                    // to 575       PHONE
+                    sm: '(min-width: 576px)',
+                    // 576 - 767    PHABLET
+                    md: '(min-width: 768px)',
+                    // 768 - 991    TABLET
+                    lg: '(min-width: 992px)',
+                    // 992 - 1199   SMALL_LAPTOP_SCREEN
+                    xl: '(min-width: 1200px)' // from 1200    USUALSCREEN
                 },
-            order: presets ? this.getPresets(presets, 'order') : ['xl', 'lg', 'md', 'sm', 'xs'],
             queryString: queryString,
             innerWidth: window.innerWidth,
         };
     }
-    /**
-     * @param {?=} value
-     * @param {?=} type
-     * @return {?}
-     */
-    CIService.prototype.getPresets = /**
-     * @param {?=} value
-     * @param {?=} type
-     * @return {?}
-     */
-    function (value, type) {
-        if (value === void 0) { value = ''; }
-        /** @type {?} */
-        var splittedValues = value.split('|');
-        /** @type {?} */
-        var result = { presets: {}, order: [] };
-        for (var i = 0; i < splittedValues.length; i++) {
-            /** @type {?} */
-            var splittedParam = splittedValues[i] && splittedValues[i].split(':');
-            /** @type {?} */
-            var prop = splittedParam[0] && splittedParam[0].trim();
-            /** @type {?} */
-            var val = splittedParam[1] && splittedParam[1].trim();
-            if (prop && val) {
-                result.presets[prop] = val;
-                result.order.unshift(prop);
-            }
-        }
-        return result[type];
-    };
     /**
      * @param {?} img
      * @param {?} config
@@ -153,7 +122,11 @@ var CIService = /** @class */ (function () {
             parentNode = (parentNode && parentNode.parentNode) || img.parentNode;
             width = parentNode.getBoundingClientRect().width;
         } while (parentNode && !width);
-        return width;
+        /** @type {?} */
+        var letPadding = width && parentNode && parseInt(window.getComputedStyle(parentNode).paddingLeft, 10);
+        /** @type {?} */
+        var rightPadding = parseInt(window.getComputedStyle(parentNode).paddingRight, 10);
+        return width + (width ? (-letPadding - rightPadding) : 0);
     };
     /**
      * @param {?} currentSize
@@ -164,30 +137,13 @@ var CIService = /** @class */ (function () {
      * @return {?}
      */
     function (currentSize) {
-        return currentSize <= 25 ? '25' :
-            currentSize <= 50 ? '50' :
-                currentSize <= 100 ? '100'
-                    : currentSize <= 200 ? '200'
-                        : currentSize <= 300 ? '300'
-                            : currentSize <= 400 ? '400'
-                                : currentSize <= 500 ? '500'
-                                    : currentSize <= 600 ? '600'
-                                        : currentSize <= 700 ? '700'
-                                            : currentSize <= 800 ? '800'
-                                                : currentSize <= 900 ? '900'
-                                                    : currentSize <= 1000 ? '1000'
-                                                        : currentSize <= 1100 ? '1100'
-                                                            : currentSize <= 1200 ? '1200'
-                                                                : currentSize <= 1300 ? '1300'
-                                                                    : currentSize <= 1400 ? '1400'
-                                                                        : currentSize <= 1500 ? '1500'
-                                                                            : currentSize <= 1600 ? '1600'
-                                                                                : currentSize <= 1700 ? '1700'
-                                                                                    : currentSize <= 1800 ? '1800'
-                                                                                        : currentSize <= 1900 ? '1900'
-                                                                                            : currentSize <= 2400 ? '2400'
-                                                                                                : currentSize <= 2800 ? '2800'
-                                                                                                    : '3600';
+        if (currentSize <= 25) {
+            return '25';
+        }
+        if (currentSize <= 50) {
+            return '50';
+        }
+        return (Math.ceil(currentSize / 100) * 100).toString();
     };
     /**
      * @param {?} size
@@ -198,7 +154,14 @@ var CIService = /** @class */ (function () {
      * @return {?}
      */
     function (size) {
-        return size && typeof size === 'object';
+        try {
+            /** @type {?} */
+            var array = size.split(',');
+            return array.length > 1;
+        }
+        catch (e) {
+            return false;
+        }
     };
     /**
      * @param {?} src
@@ -247,9 +210,13 @@ var CIService = /** @class */ (function () {
         var splittedSizes = size.toString().split('x');
         /** @type {?} */
         var result = [];
-        [].forEach.call(splittedSizes, function (item) {
+        [].forEach.call(splittedSizes, (/**
+         * @param {?} item
+         * @return {?}
+         */
+        function (item) {
             result.push(item * Math.round(window.devicePixelRatio || 1));
-        });
+        }));
         return result.join('x');
     };
     /**
@@ -297,41 +264,69 @@ var CIService = /** @class */ (function () {
      * @return {?}
      */
     function (operation, size, filters, imgSrc, isAdaptive, config, isPreview) {
+        var _this = this;
         /** @type {?} */
         var sources = [];
         if (isAdaptive) {
-            /** @type {?} */
-            var orderFiltered = [];
-            for (var i = 0; i < config.order.length; i++) {
-                /** @type {?} */
-                var nextSize = size[config.order[i]];
-                if (nextSize) {
-                    orderFiltered.unshift(config.order[i]);
-                }
-            }
-            for (var i = 0; i < orderFiltered.length; i++) {
-                /** @type {?} */
-                var isLast = !(i < orderFiltered.length - 1);
-                /** @type {?} */
-                var nextSizeType = isLast ? orderFiltered[i - 1] : orderFiltered[i];
-                /** @type {?} */
-                var nextSize = size[orderFiltered[i]];
+            size.forEach((/**
+             * @param {?} __0
+             * @return {?}
+             */
+            function (_a) {
+                var nextSize = _a.size, mediaQuery = _a.media;
                 if (isPreview) {
-                    nextSize = nextSize.split('x').map(function (item) { return item / 5; }).join('x');
+                    nextSize = nextSize.split('x').map((/**
+                     * @param {?} sizeNext
+                     * @return {?}
+                     */
+                    function (sizeNext) { return sizeNext / 5; })).join('x');
+                    filters = 'q10.foil1';
                 }
-                /** @type {?} */
-                var srcSet = this.generateSrcset(operation, nextSize, filters, imgSrc, config);
-                /** @type {?} */
-                var mediaQuery = '(' + (isLast ? 'min' : 'max') + '-width: ' + (config.presets[nextSizeType] + (isLast ? 1 : 0)) + 'px)';
-                sources.push({ mediaQuery: mediaQuery, srcSet: srcSet });
-            }
+                sources.push({ mediaQuery: mediaQuery, srcSet: _this.generateSrcset(operation, nextSize, filters, imgSrc, config) });
+            }));
         }
         else {
+            if (isPreview) {
+                size = size.split('x').map((/**
+                 * @param {?} sizeNext
+                 * @return {?}
+                 */
+                function (sizeNext) { return sizeNext / 5; })).join('x');
+                filters = 'q10.foil1';
+            }
             sources.push({
-                srcSet: this.generateSrcset(operation, size.split('x').map(function (item) { return item / 5; }).join('x'), 'q10.foil1', imgSrc, config)
+                srcSet: this.generateSrcset(operation, size, filters, imgSrc, config)
             });
         }
         return sources;
+    };
+    /**
+     * @param {?} size
+     * @param {?} config
+     * @return {?}
+     */
+    CIService.prototype.getAdaptiveSize = /**
+     * @param {?} size
+     * @param {?} config
+     * @return {?}
+     */
+    function (size, config) {
+        /** @type {?} */
+        var arrayOfSizes = size.split(',');
+        /** @type {?} */
+        var sizes = [];
+        arrayOfSizes.forEach((/**
+         * @param {?} string
+         * @return {?}
+         */
+        function (string) {
+            /** @type {?} */
+            var groups = string.match(/((?<variable>[a-z_][a-z_]*)|(?<media>\([\S\s]*\)))\s*(?<size>[0-9xp]*)/).groups;
+            /** @type {?} */
+            var media = groups.media ? groups.media : config.presets[groups.variable];
+            sizes.push({ media: media, size: groups.size });
+        }));
+        return sizes;
     };
     /**
      * @param {?} operation
@@ -350,10 +345,7 @@ var CIService = /** @class */ (function () {
      * @return {?}
      */
     function (operation, size, filters, imgSrc, config) {
-        /** @type {?} */
-        var imgWidth = size.toString().split('x')[0];
-        /** @type {?} */
-        var imgHeight = size.toString().split('x')[1];
+        var _a = Object(tslib__WEBPACK_IMPORTED_MODULE_1__["__read"])(size.toString().split('x'), 2), imgWidth = _a[0], imgHeight = _a[1];
         return this.generateImgSrc(operation, filters, imgSrc, imgWidth, imgHeight, 1, config);
     };
     /**
@@ -399,39 +391,20 @@ var CIService = /** @class */ (function () {
      * @return {?}
      */
     function (size, config) {
+        var _a, _b;
         /** @type {?} */
         var width;
         /** @type {?} */
         var height;
         if (typeof size === 'object') {
             /** @type {?} */
-            var breakPoint = this.getBreakPoint(config);
+            var breakPointSource = this.getBreakPoint(size);
             /** @type {?} */
-            var orderIndex = config.order.indexOf(breakPoint);
-            /** @type {?} */
-            var breakPointSize = null;
-            do {
-                /** @type {?} */
-                var nextBreakpoint = config.order[orderIndex];
-                breakPointSize = size[nextBreakpoint];
-                orderIndex--;
-            } while (!breakPointSize && orderIndex >= 0);
-            if (!breakPointSize) {
-                /** @type {?} */
-                var orderIndexStepTwo = config.order.indexOf(breakPoint);
-                do {
-                    /** @type {?} */
-                    var nextBreakpoint = config.order[orderIndexStepTwo];
-                    breakPointSize = size[nextBreakpoint];
-                    orderIndexStepTwo++;
-                } while (!breakPointSize && orderIndexStepTwo <= config.order.length);
-            }
-            width = breakPointSize.toString().split('x')[0];
-            height = breakPointSize.toString().split('x')[1];
+            var breakPointSize = breakPointSource ? breakPointSource.size : size[0].size;
+            _a = Object(tslib__WEBPACK_IMPORTED_MODULE_1__["__read"])(breakPointSize.toString().split('x'), 2), width = _a[0], height = _a[1];
         }
         else {
-            width = size.toString().split('x')[0];
-            height = size.toString().split('x')[1];
+            _b = Object(tslib__WEBPACK_IMPORTED_MODULE_1__["__read"])(size.toString().split('x'), 2), width = _b[0], height = _b[1];
         }
         if (width && height) {
             return width / height;
@@ -439,20 +412,19 @@ var CIService = /** @class */ (function () {
         return null;
     };
     /**
-     * @param {?} config
+     * @param {?} size
      * @return {?}
      */
     CIService.prototype.getBreakPoint = /**
-     * @param {?} config
+     * @param {?} size
      * @return {?}
      */
-    function (config) {
-        var presets = config.presets, order = config.order;
-        /** @type {?} */
-        var innerWidth = window.innerWidth;
-        /** @type {?} */
-        var prevBreakPointLimit = order.findIndex(function (item) { return presets[item] < innerWidth; });
-        return order[prevBreakPointLimit - 1] || order[prevBreakPointLimit] || order[order.length - 1];
+    function (size) {
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_1__["__spread"])(size).reverse().find((/**
+         * @param {?} item
+         * @return {?}
+         */
+        function (item) { return matchMedia(item.media).matches; }));
     };
     CIService.decorators = [
         { type: _angular_core__WEBPACK_IMPORTED_MODULE_2__["Injectable"], args: [{
@@ -469,15 +441,18 @@ var CIService = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 var ImgComponent = /** @class */ (function () {
     function ImgComponent(ciService, _sanitizer) {
         this.ciService = ciService;
         this._sanitizer = _sanitizer;
+        this.class = '';
         this.offset = 100;
         this.cloudimageUrl = '';
         this.sources = [];
+        this.firstSource = null;
+        this.restSources = [];
         this.isLoaded = false;
         this.isProcessed = false;
         this.windowInnerWidth = window.innerWidth;
@@ -501,15 +476,15 @@ var ImgComponent = /** @class */ (function () {
     function () {
         var _this = this;
         this.resizeObservable$ = Object(rxjs__WEBPACK_IMPORTED_MODULE_4__["fromEvent"])(window, 'resize').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["debounceTime"])(500));
-        this.resizeSubscription$ = this.resizeObservable$.subscribe(function () {
-            if (_this.isAdaptive) {
-                _this.processImage();
-            }
-            else if (_this.windowInnerWidth < window.innerWidth) {
+        this.resizeSubscription$ = this.resizeObservable$.subscribe((/**
+         * @return {?}
+         */
+        function () {
+            if (_this.isAdaptive || _this.windowInnerWidth < window.innerWidth) {
                 _this.processImage();
             }
             _this.windowInnerWidth = window.innerWidth;
-        });
+        }));
     };
     /**
      * @return {?}
@@ -541,6 +516,7 @@ var ImgComponent = /** @class */ (function () {
         var filters = this.filters || this.f || config.filters;
         /** @type {?} */
         var isAdaptive = this.ciService.checkOnMedia(size);
+        size = isAdaptive ? this.ciService.getAdaptiveSize(size, config) : size;
         /** @type {?} */
         var isRelativeUrlPath = this.ciService.checkIfRelativeUrlPath(this.src);
         /** @type {?} */
@@ -549,7 +525,7 @@ var ImgComponent = /** @class */ (function () {
         var resultSize = isAdaptive ? size : this.ciService.getSizeAccordingToPixelRatio(size);
         this.isPreview = !config.isChrome && (parentContainerWidth > 400) && config.lazyLoading;
         this.cloudimageUrl = isAdaptive ?
-            this.ciService.generateUrl('width', parentContainerWidth, filters, imgSrc, config) :
+            this.ciService.generateUrl('width', this.ciService.getSizeAccordingToPixelRatio(parentContainerWidth), filters, imgSrc, config) :
             this.ciService.generateUrl(operation, resultSize, filters, imgSrc, config);
         this.sources = isAdaptive ?
             this.ciService.generateSources(operation, resultSize, filters, imgSrc, isAdaptive, config, false) : [];
@@ -562,7 +538,11 @@ var ImgComponent = /** @class */ (function () {
             var previewConfig = Object(tslib__WEBPACK_IMPORTED_MODULE_1__["__assign"])({}, config, { queryString: '' });
             previewCloudimageUrl = isAdaptive ?
                 this.ciService.generateUrl('width', (parentContainerWidth / 5), 'q10.foil1', imgSrc, previewConfig) :
-                this.ciService.generateUrl(operation, resultSize.split('x').map(function (item) { return item / 5; }).join('x'), 'q10.foil1', imgSrc, previewConfig);
+                this.ciService.generateUrl(operation, resultSize.split('x').map((/**
+                 * @param {?} item
+                 * @return {?}
+                 */
+                function (item) { return item / 5; })).join('x'), 'q10.foil1', imgSrc, previewConfig);
             previewSources = isAdaptive ?
                 this.ciService.generateSources(operation, resultSize, 'q10.foil1', imgSrc, isAdaptive, previewConfig, true) : [];
         }
@@ -576,9 +556,12 @@ var ImgComponent = /** @class */ (function () {
         this.imageHeight = Math.floor(parentContainerWidth / (ratioBySize || this.ratio || 1.5));
         this.isRatio = !!(ratioBySize || this.ratio);
         this.ratioBySize = ratioBySize;
-        setTimeout(function () {
+        setTimeout((/**
+         * @return {?}
+         */
+        function () {
             _this.isProcessed = true;
-        });
+        }));
     };
     /**
      * @return {?}
@@ -601,6 +584,29 @@ var ImgComponent = /** @class */ (function () {
     /**
      * @return {?}
      */
+    ImgComponent.prototype.getRestSources = /**
+     * @return {?}
+     */
+    function () {
+        /** @type {?} */
+        var resultSources = Object(tslib__WEBPACK_IMPORTED_MODULE_1__["__spread"])((!this.isPreview ? this.sources : (this.isPreviewLoaded ? this.sources : this.previewSources)));
+        return resultSources.slice(1).reverse();
+    };
+    /**
+     * @return {?}
+     */
+    ImgComponent.prototype.getFirstSource = /**
+     * @return {?}
+     */
+    function () {
+        /** @type {?} */
+        var resultSources = Object(tslib__WEBPACK_IMPORTED_MODULE_1__["__spread"])((!this.isPreview ? this.sources : (this.isPreviewLoaded ? this.sources : this.previewSources)));
+        this.firstSource = resultSources[0];
+        return resultSources[0];
+    };
+    /**
+     * @return {?}
+     */
     ImgComponent.prototype.getPositionStyle = /**
      * @return {?}
      */
@@ -614,7 +620,9 @@ var ImgComponent = /** @class */ (function () {
      * @return {?}
      */
     function () {
-        return this._sanitizer.bypassSecurityTrustStyle(this.isRatio ? '100%' : 'auto');
+        // todo check if we need 100% height
+        // return this._sanitizer.bypassSecurityTrustStyle(this.isRatio ? '100%' : 'auto');
+        return this._sanitizer.bypassSecurityTrustStyle(this.isRatio ? 'auto' : 'auto');
     };
     /**
      * @return {?}
@@ -691,7 +699,7 @@ var ImgComponent = /** @class */ (function () {
         var config = this.ciService.config;
         /** @type {?} */
         var result = 'transparent';
-        if (this.isRatio) {
+        if (this.isRatio && !this.isPreviewLoaded && !this.isLoaded) {
             result = config.placeholderBackground;
         }
         return this._sanitizer.bypassSecurityTrustStyle(result);
@@ -699,7 +707,7 @@ var ImgComponent = /** @class */ (function () {
     ImgComponent.decorators = [
         { type: _angular_core__WEBPACK_IMPORTED_MODULE_2__["Component"], args: [{
                     selector: 'ci-img',
-                    template: "\n    <picture #pictureElem *ngIf=\"!isProcessed\"></picture>\n\n    <ng-container [ngSwitch]=\"lazyLoading\">\n      <ng-container *ngSwitchCase=\"true\">\n        <picture\n          class=\"{{class + ' cloudimage-image-picture cloudimage-image-' + (isLoaded ? 'loaded' : 'loading')}}\"\n          style=\"display:block;width:100%;overflow:hidden;position:relative;\"\n          [style.paddingBottom]=\"getPicturePaddingBottom()\"\n          [style.background]=\"getPictureBackground()\"\n          #imgElem\n          *ngIf=\"isProcessed\">\n          <source\n            *ngFor=\"let source of (!isPreview ? sources : (isPreviewLoaded ? sources : previewSources))\"\n            [media]=\"source.mediaQuery || ''\"\n            [attr.lazyLoad]=\"source.srcSet || ''\"\n            [srcset]=\"source.srcSet || ''\"\n            (load)=\"onImageLoad()\"\n          />\n          <img\n            style=\"display:block;width:100%;opacity:1;top:0;left:0;\"\n            [style.position]=\"getPositionStyle()\"\n            [style.height]=\"getImgHeight()\"\n            [style.transform]=\"getTransformStyle()\"\n            [style.transition]=\"getTransitionStyle()\"\n            [style.filter]=\"getFilterStyle()\"\n            (load)=\"onImageLoad()\"\n            [lazyLoad]=\"!isPreview ? cloudimageUrl : (isPreviewLoaded ? cloudimageUrl : previewCloudimageUrl)\"\n            [offset]=\"offset\"\n            [alt]=\"\">\n        </picture>\n      </ng-container>\n      <div *ngSwitchCase=\"false\">\n        <picture\n          class=\"{{class + ' cloudimage-image-picture cloudimage-image-' + (isLoaded ? 'loaded' : 'loading')}}\"\n          style=\"display:block;width:100%;overflow:hidden;position:relative;\"\n          [style.paddingBottom]=\"getPicturePaddingBottom()\"\n          [style.background]=\"getPictureBackground()\"\n          #imgElem\n          *ngIf=\"isProcessed\">\n          <source\n            *ngFor=\"let source of (!isPreview ? sources : (isPreviewLoaded ? sources : previewSources))\"\n            [media]=\"source.mediaQuery || ''\"\n            [srcset]=\"source.srcSet || ''\"\n            (load)=\"onImageLoad()\"\n          />\n          <img\n            style=\"display:block;width:100%;opacity:1;top:0;left:0;\"\n            [style.position]=\"getPositionStyle()\"\n            [style.height]=\"getImgHeight()\"\n            [style.transform]=\"getTransformStyle()\"\n            [style.transition]=\"getTransitionStyle()\"\n            [style.filter]=\"getFilterStyle()\"\n            (load)=\"onImageLoad()\"\n            [src]=\"!isPreview ? cloudimageUrl : (isPreviewLoaded ? cloudimageUrl : previewCloudimageUrl)\"\n            [alt]=\"\">\n        </picture>\n      </div>\n    </ng-container>\n  "
+                    template: "\n    <picture #pictureElem *ngIf=\"!isProcessed\"></picture>\n\n    <ng-container [ngSwitch]=\"lazyLoading\">\n      <ng-container *ngSwitchCase=\"true\">\n        <picture\n          [class]=\"class + ' cloudimage-image-picture cloudimage-image-' + (isLoaded ? 'loaded' : 'loading')\"\n          style=\"display:block;width:100%;overflow:hidden;position:relative;\"\n          [style.paddingBottom]=\"getPicturePaddingBottom()\"\n          [style.background]=\"getPictureBackground()\"\n          #imgElem\n          *ngIf=\"isProcessed\">\n          <source\n            *ngFor=\"let source of getRestSources()\"\n            [media]=\"source.mediaQuery || ''\"\n            [attr.lazyLoad]=\"source.srcSet || ''\"\n            [srcset]=\"source.srcSet || ''\"\n            (load)=\"onImageLoad()\"\n          />\n          <source\n            *ngIf=\"getFirstSource()\"\n            [attr.lazyLoad]=\"firstSource.srcSet || ''\"\n            [srcset]=\"firstSource.srcSet || ''\"\n            (load)=\"onImageLoad()\"\n          />\n          <img\n            style=\"display:block;width:100%;opacity:1;top:0;left:0;\"\n            [style.position]=\"getPositionStyle()\"\n            [style.height]=\"getImgHeight()\"\n            [style.transform]=\"getTransformStyle()\"\n            [style.transition]=\"getTransitionStyle()\"\n            [style.filter]=\"getFilterStyle()\"\n            (load)=\"onImageLoad()\"\n            [lazyLoad]=\"!isPreview ? cloudimageUrl : (isPreviewLoaded ? cloudimageUrl : previewCloudimageUrl)\"\n            [offset]=\"offset\"\n            [alt]=\"\">\n        </picture>\n      </ng-container>\n      <div *ngSwitchCase=\"false\">\n        <picture\n          [class]=\"class + ' cloudimage-image-picture cloudimage-image-' + (isLoaded ? 'loaded' : 'loading')\"\n          style=\"display:block;width:100%;overflow:hidden;position:relative;\"\n          [style.paddingBottom]=\"getPicturePaddingBottom()\"\n          [style.background]=\"getPictureBackground()\"\n          #imgElem\n          *ngIf=\"isProcessed\">\n          <source\n            *ngFor=\"let source of restSources\"\n            [media]=\"source.mediaQuery || ''\"\n            [attr.lazyLoad]=\"source.srcSet || ''\"\n            [srcset]=\"source.srcSet || ''\"\n            (load)=\"onImageLoad()\"\n          />\n          <source\n            *ngIf=\"firstSource\"\n            [attr.lazyLoad]=\"firstSource.srcSet || ''\"\n            [srcset]=\"firstSource.srcSet || ''\"\n            (load)=\"onImageLoad()\"\n          />\n          <img\n            style=\"display:block;width:100%;opacity:1;top:0;left:0;\"\n            [style.position]=\"getPositionStyle()\"\n            [style.height]=\"getImgHeight()\"\n            [style.transform]=\"getTransformStyle()\"\n            [style.transition]=\"getTransitionStyle()\"\n            [style.filter]=\"getFilterStyle()\"\n            (load)=\"onImageLoad()\"\n            [src]=\"!isPreview ? cloudimageUrl : (isPreviewLoaded ? cloudimageUrl : previewCloudimageUrl)\"\n            [alt]=\"\">\n        </picture>\n      </div>\n    </ng-container>\n  "
                 }] }
     ];
     /** @nocollapse */
@@ -728,7 +736,7 @@ var ImgComponent = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 var CIModule = /** @class */ (function () {
     function CIModule() {
@@ -746,12 +754,12 @@ var CIModule = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 
@@ -790,7 +798,7 @@ webpackEmptyAsyncContext.id = "./$$_lazy_route_resource lazy recursive";
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "body {\n  font-size: 18px;\n}\n\n.logo {\n  display: inline;\n  width: auto;\n  height: 40px;\n  position: relative;\n  top: -3px;\n}\n\n.container h1 {\n  margin-top: 40px;\n}\n\n.container h1 + p {\n  color: #ababab;\n  font-size: 22px;\n}\n\np.description {\n  margin-top: 10px;\n}\n\np.numbers {\n  font-size: 16px;\n  color: #4b4b4b;\n}\n\n@media (max-width: 767px) {\n  .desc-wrapper-with-media-query {\n    margin-top: 20px;\n  }\n}\n\ndiv.images-in-columns div {\n  margin-bottom: 15px;\n  font-size: 14px;\n}\n\npre {\n  padding: 1.5rem;\n  margin-right: 0;\n  margin-left: 0;\n  border-width: .2rem;\n  margin: 1rem -15px 0;\n  border: solid #f8f9fa;\n}\n\npre p {\n  margin: 0;\n  padding: 0;\n}\n\nimg {\n  width: 100%;\n}\n\n.github-logo-wrapper {\n  position: absolute;\n  top: 10px;\n  right: 15px;\n}\n\n.github-logo-wrapper .github-logo {\n  width: 20px;\n  margin-right: 10px;\n}\n\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2plY3RzL2V4YW1wbGUvc3JjL2FwcC9hcHAuY29tcG9uZW50LmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLGdCQUFnQjtDQUNqQjs7QUFFRDtFQUNFLGdCQUFnQjtFQUNoQixZQUFZO0VBQ1osYUFBYTtFQUNiLG1CQUFtQjtFQUNuQixVQUFVO0NBQ1g7O0FBRUQ7RUFDRSxpQkFBaUI7Q0FDbEI7O0FBRUQ7RUFDRSxlQUFlO0VBQ2YsZ0JBQWdCO0NBQ2pCOztBQUVEO0VBQ0UsaUJBQWlCO0NBQ2xCOztBQUVEO0VBQ0UsZ0JBQWdCO0VBQ2hCLGVBQWU7Q0FDaEI7O0FBRUQ7RUFDRTtJQUNFLGlCQUFpQjtHQUNsQjtDQUNGOztBQUVEO0VBQ0Usb0JBQW9CO0VBQ3BCLGdCQUFnQjtDQUNqQjs7QUFFRDtFQUNFLGdCQUFnQjtFQUNoQixnQkFBZ0I7RUFDaEIsZUFBZTtFQUNmLG9CQUFvQjtFQUNwQixxQkFBcUI7RUFDckIsc0JBQXNCO0NBQ3ZCOztBQUVEO0VBQ0UsVUFBVTtFQUNWLFdBQVc7Q0FDWjs7QUFFRDtFQUNFLFlBQVk7Q0FDYjs7QUFFRDtFQUNFLG1CQUFtQjtFQUNuQixVQUFVO0VBQ1YsWUFBWTtDQUNiOztBQUVEO0VBQ0UsWUFBWTtFQUNaLG1CQUFtQjtDQUNwQiIsImZpbGUiOiJwcm9qZWN0cy9leGFtcGxlL3NyYy9hcHAvYXBwLmNvbXBvbmVudC5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyJib2R5IHtcbiAgZm9udC1zaXplOiAxOHB4O1xufVxuXG4ubG9nbyB7XG4gIGRpc3BsYXk6IGlubGluZTtcbiAgd2lkdGg6IGF1dG87XG4gIGhlaWdodDogNDBweDtcbiAgcG9zaXRpb246IHJlbGF0aXZlO1xuICB0b3A6IC0zcHg7XG59XG5cbi5jb250YWluZXIgaDEge1xuICBtYXJnaW4tdG9wOiA0MHB4O1xufVxuXG4uY29udGFpbmVyIGgxICsgcCB7XG4gIGNvbG9yOiAjYWJhYmFiO1xuICBmb250LXNpemU6IDIycHg7XG59XG5cbnAuZGVzY3JpcHRpb24ge1xuICBtYXJnaW4tdG9wOiAxMHB4O1xufVxuXG5wLm51bWJlcnMge1xuICBmb250LXNpemU6IDE2cHg7XG4gIGNvbG9yOiAjNGI0YjRiO1xufVxuXG5AbWVkaWEgKG1heC13aWR0aDogNzY3cHgpIHtcbiAgLmRlc2Mtd3JhcHBlci13aXRoLW1lZGlhLXF1ZXJ5IHtcbiAgICBtYXJnaW4tdG9wOiAyMHB4O1xuICB9XG59XG5cbmRpdi5pbWFnZXMtaW4tY29sdW1ucyBkaXYge1xuICBtYXJnaW4tYm90dG9tOiAxNXB4O1xuICBmb250LXNpemU6IDE0cHg7XG59XG5cbnByZSB7XG4gIHBhZGRpbmc6IDEuNXJlbTtcbiAgbWFyZ2luLXJpZ2h0OiAwO1xuICBtYXJnaW4tbGVmdDogMDtcbiAgYm9yZGVyLXdpZHRoOiAuMnJlbTtcbiAgbWFyZ2luOiAxcmVtIC0xNXB4IDA7XG4gIGJvcmRlcjogc29saWQgI2Y4ZjlmYTtcbn1cblxucHJlIHAge1xuICBtYXJnaW46IDA7XG4gIHBhZGRpbmc6IDA7XG59XG5cbmltZyB7XG4gIHdpZHRoOiAxMDAlO1xufVxuXG4uZ2l0aHViLWxvZ28td3JhcHBlciB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgdG9wOiAxMHB4O1xuICByaWdodDogMTVweDtcbn1cblxuLmdpdGh1Yi1sb2dvLXdyYXBwZXIgLmdpdGh1Yi1sb2dvIHtcbiAgd2lkdGg6IDIwcHg7XG4gIG1hcmdpbi1yaWdodDogMTBweDtcbn1cbiJdfQ== */"
+module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJwcm9qZWN0cy9leGFtcGxlL3NyYy9hcHAvYXBwLmNvbXBvbmVudC5jc3MifQ== */"
 
 /***/ }),
 
@@ -801,7 +809,7 @@ module.exports = "body {\n  font-size: 18px;\n}\n\n.logo {\n  display: inline;\n
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\" style=\"position: relative;\">\n  <h1>\n    Cloudimage Angular Plugin\n    <img\n      class=\"logo\"\n      src=\"https://think360studio.com/wp-content/uploads/2016/03/angular-js-icon.svg\"\n      alt=\"Angular logo\"\n      height=\"40px\">\n  </h1>\n\n  <a href=\"https://github.com/scaleflex/ng-cloudimage-responsive\" class=\"github-logo-wrapper\">\n    <img class=\"github-logo\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAYAAAA5ZDbSAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpFNTE3OEEzMjk5QTAxMUUyOUExNUJDMTA0NkE4OTA0RCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDoyQTQxNEFCQzk5QTExMUUyOUExNUJDMTA0NkE4OTA0RCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkU1MTc4QTMwOTlBMDExRTI5QTE1QkMxMDQ2QTg5MDREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkU1MTc4QTMxOTlBMDExRTI5QTE1QkMxMDQ2QTg5MDREIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+R7ClIwAADR5JREFUeNrsnQuw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\" alt=\"\"/>\n    see on github\n  </a>\n\n  <p>Cloudimage Responsive plugin\n    will <strong>resize</strong>, <strong>compress</strong> and <strong>accelerate</strong> images across the World\n    in your <b>Angular</b> application. It leverages the HTML5 &lt;picture&gt; and &lt;srcset&gt; elements to deliver\n    the right image size based on the client's <strong>screen size</strong> and <strong>pixel ratio</strong> (retina\n    vs non-retina). You can find the full extend of image operations in the Cloudimage documentation\n    <a href=\"https://docs.cloudimage.io/go/cloudimage-documentation/en/operations/\"> here</a>.</p>\n\n  <h3 style=\"margin-top:40px;margin-bottom:20px;\">\n    I. Responsive mode, according to image container size\n  </h3>\n</div>\n\n<ci-img [src]=\"images[0].src\" [ratio]=\"images[0].ratio\"></ci-img>\n\n<div class=\"container\">\n      <pre><code>\n        <p>&lt;ci-img [src]=\"images[0].src\" [ratio]=\"images[0].ratio\"/&gt;</p>\n      </code></pre>\n\n  <p class=\"description\">\n    In this example, image width equals to browser window screen width and is used for calculations.\n    Image will be downloaded according to the closest limit (25px, 50px, 100px, 100px * n ). Limit is used for cache\n    reasons.\n  </p>\n\n  Let's see the numbers:<br/>\n\n  <p class=\"numbers\">\n    <b>original image:</b> <i>4.8mb</i> <a href=\"https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg\"\n                                           target=\"_blank\"> link</a><br/>\n    mobile sizes:<br/>\n    <b>400px screen</b> with 1x pixel ratio: <i>31.5kb</i> <a\n    href=\"https://demo.cloudimg.io/width/400/q80.foil1/https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg\"\n    target=\"_blank\"> link</a><br/>\n    <b>400px screen</b> with 2x(Retina) pixel ratio: <i>105kb</i> <a\n    href=\"https://demo.cloudimg.io/width/800/q80.foil1/https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg\"\n    target=\"_blank\"> link</a><br/>\n    laptop sizes:<br/>\n    <b>1400px screen</b> with 1x pixel ratio: <i>300kb</i> <a\n    href=\"https://demo.cloudimg.io/width/1400/q80.foil1/https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg\"\n    target=\"_blank\"> link</a><br/>\n    <b>1400px screen</b> with 2x(Retina) pixel ratio: <i>1mb</i> <a\n    href=\"https://demo.cloudimg.io/width/2800/q80.foil1/https://cloudimage.public.airstore.io/demo/magnus-lindvall.jpg\"\n    target=\"_blank\"> link</a><br/>\n  </p>\n\n  <p class=\"description\" style=\"margin-top:15px;\">\n    In the examples below, the images will be downloaded according to the closest limit for their container\n  </p>\n\n  <div class=\"row images-in-columns\">\n    <div class=\"col-12\">\n      <ci-img [src]=\"images[8].src\" [ratio]=\"images[8].ratio\"></ci-img>\n    </div>\n\n    <div *ngFor=\"let image of images.slice(1, 7)\" class=\"col-6\">\n      <ci-img [src]=\"image.src\" [ratio]=\"image.ratio\"></ci-img>\n      original: <i>{{image.original_size}}</i>\n        <a href=\"{{'https://cloudimage.public.airstore.io/demo/' + image.src}}\" target=\"_blank\"> link</a><br/>\n    </div>\n  </div>\n\n  <h3 style=\"margin-top:40px;margin-bottom:20px;\">\n    II. Manual mode\n  </h3>\n\n  <div class=\"row\">\n    <div class=\"col-md-6 col-lg-7\">\n      <ci-img\n        [src]=\"images[18].src\"\n        [operation]=\"'crop'\"\n        [size]=\"{ xl: '1600x1000', lg: '1400x1200', md: '1000x1350', sm: '800x400' }\"\n      ></ci-img>\n      <small>\n        original: <i>{{images[18].original_size}}</i> <a\n        href=\"{{'https://cloudimage.public.airstore.io/demo/' + images[18].src}}\" target=\"_blank\"> link</a><br/>\n      </small>\n    </div>\n    <div class=\"col-md-6 col-lg-5 desc-wrapper-with-media-query\">\n      <h4>You can control your image size/ratio/crop with media query breakpoints</h4>\n      <p>Resize your browser window to see how it works</p>\n      <pre><code>\n&lt;ci-img\n  operation=\"crop\"\n  [src]=\"images[18].src\"\n  [size]=\"&#123;\n    xl: '1600x1000',\n    lg: '1400x1200',\n    md: '1000x1350',\n    sm: '800x400'\n  &#125;\"\n&lt;/ci-img&gt;\n      </code></pre>\n    </div>\n  </div>\n\n  <div style=\"margin-top:40px;\">\n    <h4>Any questions?</h4>\n    <p>Contact us at <a href=\"mailto:hello@cloudimage.io\">hello@cloudimage.io</a>, our image resizing experts will be happy to help!</p>\n  </div>\n</div>\n"
+module.exports = "<div id=\"main\" class=\"wrapper\">\n  <section class=\"home\">\n    <div class=\"container\">\n      <a class=\"logo\" href=\"https://scaleflex.github.io/ng-cloudimage-responsive/\">Angular Cloudimage Responsive</a>\n      <div class=\"reference-buttons\">\n        <a class=\"github-button\" target=\"_blank\"\n           href=\"https://github.com/Scaleflex/ng-cloudimage-responsive/subscription\" data-icon=\"octicon-eye\"\n           aria-label=\"Watch Scaleflex/ng-cloudimage-responsive on GitHub\">Watch</a>\n        <a class=\"github-button\" target=\"_blank\" href=\"https://github.com/Scaleflex/ng-cloudimage-responsive\"\n           data-icon=\"octicon-star\" aria-label=\"Star Scaleflex/ng-cloudimage-responsive on GitHub\">Star</a>\n        <a class=\"github-button\" target=\"_blank\" href=\"https://github.com/Scaleflex/ng-cloudimage-responsive/fork\"\n           data-icon=\"octicon-repo-forked\" aria-label=\"Fork Scaleflex/ng-cloudimage-responsive on GitHub\">Fork</a>\n        <a class=\"twitter-share-button btn btn-info\" target=\"_blank\"\n           href=\"https://twitter.com/intent/tweet?text=Responsive%20images,%20now%20easier%20than%20ever&url=https://scaleflex.github.io/ng-cloudimage-responsive/&via=cloudimage&hashtags=images,cloudimage,responsive_images,lazy_loading,web_acceleration,image_managementimage_resizing,image_compression,image_optimization,image_CDN,image_CDNwebp,jpeg_xr,jpg_optimization,image_resizing_and_CDN,cropresize\">\n          <i> </i>\n          <span>Tweet</span>\n        </a>\n        <!--<a class=\"github-button\" href=\"https://github.com/Scaleflex/filerobot-uploader/archive/master.zip\" data-icon=\"octicon-cloud-download\" aria-label=\"Download Scaleflex/filerobot-uploader on GitHub\">Download</a>-->\n      </div>\n      <h1><strong>Responsive images</strong>, now easier than ever.</h1>\n      <h2>\n        Make your existing images <strong>responsive</strong> without creating new images. <strong>Upload</strong> one\n        high quality original image and the plugin will <strong>resize, compress and accelerate</strong> images across\n        the World in your site for all devices. The plugin supports <strong>lazy load</strong> with <strong>fancy\n        animation</strong> on image load.\n      </h2>\n\n\n      <div class=\"actions-wrapper\">\n        <a\n          id=\"view-github-btn\"\n          href=\"https://github.com/scaleflex/ng-cloudimage-responsive\"\n          class=\"btn btn-primary btn-lg\"\n          target=\"_blank\"\n        >View on GitHub</a>\n        <!--<a href=\"#\" class=\"btn btn-light btn-lg\">Read on Medium</a>-->\n      </div>\n    </div>\n\n    <a href=\"https://github.com/scaleflex/ng-cloudimage-responsive\" target=\"_blank\">\n      <img\n        class=\"fork-me-on-github\"\n        src=\"https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png\"\n        alt=\"Fork me on GitHub\">\n    </a>\n\n    <a href=\"https://www.filerobot.com/\" class=\"robot-icon\">\n      <img style=\"width:100%;\" id=\"robot-icon\"\n           src=\"https://demo.cloudimg.io/width/800/q35.foil1/https://scaleflex.airstore.io/filerobot/assets/robot-icon-left.png\"\n           alt=\"\">\n    </a>\n  </section>\n\n  <section>\n    <app-container-box></app-container-box>\n    <ci-img [src]=\"images[0].src\" [ratio]=\"images[0].ratio\"></ci-img>\n  </section>\n\n  <div style=\"background: #fff\">\n    <section class=\"container ready-to-start\">\n      <h2 class=\"text-center\">Features</h2>\n\n      <ul>\n        <li><strong>Resize large images</strong> to the size needed by your design and\n          <strong>generate multiple images</strong> for different device screen size\n        </li>\n        <li>Strip all unnecessary metadata and <strong>optimize JPEG, PNG and GIF compression</strong></li>\n        <li>Efficiently <strong>lazy load images</strong> to speed initial page load and save bandwidth</li>\n        <li>Use the low quality image with \"blur-up\" technique to <strong>show a preview</strong> of the image\n          <strong>while it loads</strong></li>\n        <li><strong>Hold the image position</strong> so your page doesn't jump while images load</li>\n      </ul>\n\n    </section>\n  </div>\n\n  <section class=\"container ready-to-start\">\n    <h2 class=\"text-center\">How it works</h2>\n    <p>\n      The plugin detects the <strong>width of image's container</strong> and <strong>pixel ratio density</strong> of\n      your device to load the exact image size you need. It <strong>processes</strong> images via\n      <a href=\"https://www.cloudimage.io/en/home\">Cloudimage.io</a> service which offers comprehensive <strong>automated\n      image optimization</strong> solutions.\n    </p>\n    <p style=\"margin-top: 20px;\">\n      When an image is first loaded on your website or mobile app, Cloudimage's resizing servers will\n      <strong>download</strong> your origin image from your origin server, <strong>resize</strong> it and\n      <strong>deliver</strong> to your user via lightning-fast Content Delivery Networks (CDNs). Once the image is\n      resized\n      in the format of your choice, Cloudimage will send it to a Content Delivery Network, which will in turn deliver\n      it rocket fast to your visitors, <strong>responsively across various screen sizes</strong>.\n    </p>\n    <p style=\"margin-top: 20px;\">\n      Read the following\n      <a href=\"https://medium.com/cloudimage/cloudimage-resizes-your-images-saves-time-accelerates-your-website-and-increases-your-conversion-eb128903d4c2\">article</a>\n      to learn more about Cloudimage.io service.\n    </p>\n  </section>\n\n  <div style=\"background: #fff\">\n    <section class=\"container ready-to-start\">\n      <h2 class=\"text-center\">In numbers</h2>\n\n      <p>\n        We have original image stored via CDN with <strong>6240×4160 px resolution</strong> and\n        <strong>8.7 mb size</strong>:\n        <code>https://scaleflex.airstore.io/demo/redcharlie.jpg</code>\n        <a target=\"_blank\" href=\"https://scaleflex.airstore.io/demo/redcharlie.jpg\"> link</a>\n        In the table below we can see what size and resolution will be loaded depending on the image's container.\n      </p>\n\n      <table class=\"table table-bordered\">\n        <thead>\n        <tr>\n          <th>container size</th>\n          <th>pixel ratio density</th>\n          <th>calculated width</th>\n          <th>result: dimantion | size | link</th>\n        </tr>\n        </thead>\n        <tbody>\n\n        <tr>\n          <td rowspan=\"2\" style=\"vertical-align: middle;\">\n            400px\n          </td>\n          <td>1</td>\n          <td>400px</td>\n          <td>400×267 | 18.7 kb | <a target=\"_blank\"\n                                     href=\"https://demo.cloudimg.io/width/400/q35.foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg\">link</a>\n          </td>\n        </tr>\n        <tr>\n          <td>2</td>\n          <td>800px</td>\n          <td>800×533 | 58.1 kb | <a target=\"_blank\"\n                                     href=\"https://demo.cloudimg.io/width/800/q35.foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg\">link</a>\n          </td>\n        </tr>\n\n        <tr>\n          <td rowspan=\"2\" style=\"vertical-align: middle;\">\n            570px\n          </td>\n          <td>1</td>\n          <td>600px</td>\n          <td>600×400 | 35.4 kb | <a target=\"_blank\"\n                                     href=\"https://demo.cloudimg.io/width/600/q35.foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg\">link</a>\n          </td>\n        </tr>\n        <tr>\n          <td>2</td>\n          <td>1200px</td>\n          <td>1200x800 | 119 kb | <a target=\"_blank\"\n                                     href=\"https://demo.cloudimg.io/width/1200/q35.foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg\">link</a>\n          </td>\n        </tr>\n\n\n        <tr>\n          <td rowspan=\"2\" style=\"vertical-align: middle;\">\n            720px\n          </td>\n          <td>1</td>\n          <td>800px</td>\n          <td>800×533 | 58.1 kb | <a target=\"_blank\"\n                                     href=\"https://demo.cloudimg.io/width/800/q35.foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg\">link</a>\n          </td>\n        </tr>\n        <tr>\n          <td>2</td>\n          <td>1600px</td>\n          <td>1600px×1066 | 200 kb | <a target=\"_blank\"\n                                        href=\"https://demo.cloudimg.io/width/1600/q35.foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg\">link</a>\n          </td>\n        </tr>\n\n        <tr>\n          <td rowspan=\"2\" style=\"vertical-align: middle;\">\n            1170px\n          </td>\n          <td>1</td>\n          <td>1200px</td>\n          <td>1200x800 | 119 kb | <a target=\"_blank\"\n                                     href=\"https://demo.cloudimg.io/width/1200/q35.foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg\">link</a>\n          </td>\n        </tr>\n        <tr>\n          <td>2</td>\n          <td>2400px</td>\n          <td>2400x1600 | 405 kb | <a target=\"_blank\"\n                                      href=\"https://demo.cloudimg.io/width/2400/q35.foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg\">link</a>\n          </td>\n        </tr>\n\n        </tbody>\n\n      </table>\n\n      <p>\n        * The plugin <strong>rounds container width</strong> to next possible value which can be divided by 100 without\n        the remainder. It's done for <strong>cache reasons</strong> so that we cache not all images different by 1px,\n        but only 100px, 200px, 300px …\n      </p>\n    </section>\n  </div>\n\n\n  <section class=\"ready-to-start\">\n    <h2 class=\"text-center\">Gallery demo</h2>\n\n    <p>Change the size of your browser's window and reload the page to see how the Cloudimage Responsive plugin will\n      deliver an optimized image for the screen size.</p>\n\n    <div class=\"container-fluid\" style=\"max-width: 1200px; margin-left: auto; margin-right: auto; padding-top: 20px;\">\n      <div class=\"row images-in-columns\">\n        <div class=\"col-12\">\n          <app-container-box></app-container-box>\n          <ci-img [src]=\"images[8].src\" [ratio]=\"images[8].ratio\"></ci-img>\n        </div>\n\n        <div *ngFor=\"let image of images.slice(1, 7)\" class=\"col-6\">\n          <app-container-box></app-container-box>\n          <ci-img [src]=\"image.src\" [ratio]=\"image.ratio\"></ci-img>\n          original: <i>{{image.original_size}}</i>\n          <a href=\"{{'https://cloudimage.public.airstore.io/demo/' + image.src}}\" target=\"_blank\"> link</a><br/>\n        </div>\n      </div>\n\n      <div class=\"row\">\n        <div class=\"col-md-6 col-lg-7\">\n          <!--<app-container-box></app-container-box>-->\n          <ci-img\n            [src]=\"images[18].src\"\n            [operation]=\"'crop'\"\n            [size]=\"'sm 400x200, (min-width: 620px) 200x60, md 250x350, lg 350x300, xl 400x250'\"\n          ></ci-img>\n          <small>\n            original: <i>9.2mb</i> <a\n            href=\"https://cloudimage.public.airstore.io/demo/dino-reichmuth-1.jpg\" target=\"_blank\"> link</a><br/>\n          </small>\n        </div>\n        <div class=\"col-md-6 col-lg-5 desc-wrapper-with-media-query\">\n          <h4>You can control your image size/ratio/crop with media query breakpoints</h4>\n          <p>Resize your browser window to see how it works</p>\n          <pre><code>\n&lt;ci-img\n  operation=\"crop\"\n  [src]=\"images[18].src\"\n  [size]=\"'\n    sm 400x200,\n    (min-width: 620px) 200x60,\n    md 250x350,\n    lg 350x300,\n    xl 400x250\n  '\"\n&lt;/ci-img&gt;\n      </code></pre>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"container ready-to-start\">\n    <h2 class=\"text-center\">Ready to get started?</h2>\n    <p>To use the plugin, you will need a Cloudimage token. Don't worry, it only takes seconds to get one by registering\n      <a\n        href=\"https://www.cloudimage.io/en/register_page\">here</a>. Once your token is created, you can configure\n      it as\n      described below.\n      This token allows you to use 25GB of image cache and 25GB of worldwide CDN traffic per month for free.</p>\n  </section>\n\n  <section class=\"container\">\n    <div class=\"text-center\">\n      <div id=\"plugin-version-switcher\" class=\"plugin-version-switcher btn-group btn-toggle\">\n        <!--{/*//&lt;!&ndash;<button id=\"js-btn\" class=\"btn btn-primary\">JS version</button>&ndash;&gt;*/}-->\n        <!--{/*//&lt;!&ndash;<a href=\"#\" class=\"btn btn-light\">React version</a>&ndash;&gt;*/}-->\n        <!--{/*//&lt;!&ndash;<a href=\"#\" class=\"btn btn-light\">Angular version</a>&ndash;&gt;*/}-->\n      </div>\n    </div>\n\n    <div id=\"js-version-box\" >\n\n      <div class=\"action-wrapper first-action\">\n        <p>Install using npm</p>\n        <figure class=\"highlight\">\n          <pre><code class=\"javascript\">npm install --save ng-cloudimage-responsive</code></pre>\n        </figure>\n      </div>\n\n      <div>\n        <div class=\"action-wrapper second-action\">\n          <p>\n            initialize it with your <strong>token</strong> and the <strong>baseUrl</strong> of your image storage\n            using <strong>CloudimageProvider</strong>\n          </p>\n          <figure class=\"highlight\">\n            <pre><code [highlight]=\"initialization\"></code></pre>\n          </figure>\n          <p>\n            Get your Cloudimage tokens <a href=\"https://www.cloudimage.io/en/register_page\">here</a>.\n          </p>\n        </div>\n\n\n        <div class=\"action-wrapper third-action\">\n          <p>\n            Implement it, just using the Img component:\n          </p>\n          <figure class=\"highlight\">\n            <pre><code [highlight]=\"implement\"></code></pre>\n          </figure>\n          <p>\n            <small>NOTE: \"ratio\" is recommended to prevent page layout jumping.\n              The parameter is used to calculate image height to hold the image position while image is loading.\n            </small>\n          </p>\n        </div>\n\n        <div class=\"action-wrapper forth-action\">\n          <p>\n            …and you're done!\n            <a href=\"https://github.com/scaleflex/ng-cloudimage-responsive#table-of-contents\"\n               target=\"_blank\">\n              Visit the full documentation here.\n            </a>\n          </p>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section style=\"text-align: center;\">\n    <div class=\"container ready-to-start\">\n      <h2>Any questions?</h2>\n      <p>\n        Contact us at <a href=\"mailto:hello@cloudimage.io\">hello@cloudimage.io</a>, our experts will be happy to help!\n      </p>\n    </div>\n  </section>\n\n  <footer>\n    <div style=\"background: #fff\">\n      <section class=\"container ready-to-start filerobot-ui-family\">\n        <div class=\"row\">\n          <div class=\"col-sm-3 filerobot-ui-family-label\" style=\"max-width: 200px; min-width: 200px;\">\n            <h5>Filerobot UI family:</h5>\n          </div>\n          <div class=\"col-sm-9\" style=\"max-width: calc(100% - 200px);\">\n            <ul>\n              <li><a target=\"_blank\" href=\"https://github.com/scaleflex/js-cloudimage-responsive\">JS Cloudimage Responsive</a></li>\n              <li><a target=\"_blank\" href=\"https://github.com/scaleflex/react-cloudimage-responsive\">React Cloudimage Responsive</a></li>\n              <li><a target=\"_blank\" href=\"https://github.com/scaleflex/filerobot-image-editor\">Uploader</a></li>\n              <li><a target=\"_blank\" href=\"https://github.com/scaleflex/filerobot-uploader\">Image Editor</a></li>\n            </ul>\n          </div>\n        </div>\n      </section>\n    </div>\n    <hr/>\n    <div class=\"copyright\">\n      <div class=\"container\">\n        <div class=\"row\">\n          <div class=\"team-desc col-sm-8\">\n            <div>Made with ❤ in 2019 in Paris, Munich and Sofia by the Scaleflex team, the guys behind <a\n              href=\"https://www.cloudimage.io/en/home\" target=\"_blank\">Cloudimage.io</a>.\n            </div>\n            <div style=\"margin-top: 10px;\">Powered by <a href=\"https://www.scaleflex.it/en/home\" target=\"_blank\">Scaleflex team</a>.\n              All rights reserved.\n            </div>\n          </div>\n          <div class=\"footer-menu col-sm-4\">\n            <ul>\n              <li><a href=\"https://github.com/scaleflex/ng-cloudimage-responsive\" target=\"_blank\">View GitHub</a></li>\n              <li><a href=\"https://github.com/scaleflex/ng-cloudimage-responsive/issues\" target=\"_blank\">Current\n                Issues</a>\n              </li>\n              <li><a href=\"https://github.com/scaleflex/ng-cloudimage-responsive#table-of-contents\" target=\"_blank\">Documentation</a>\n              </li>\n            </ul>\n          </div>\n        </div>\n      </div>\n    </div>\n  </footer>\n\n  <div id=\"device-pixel-ratio\" class=\"device-pixel-ratio\">\n    Your device pixel ratio: <span>{{getDevicePixelRatio()}}</span>\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -821,10 +829,12 @@ __webpack_require__.r(__webpack_exports__);
 
 var AppComponent = /** @class */ (function () {
     function AppComponent() {
+        this.initialization = "import { NgModule } from '@angular/core';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { CIModule, CIConfig } from 'ng-cloudimage-responsive';\nimport { AppComponent } from './app.component';\n\nconst ciConfig = {\n  token: 'demo',\n  baseUrl: 'https://jolipage.airstore.io/'\n};\n\n@NgModule({\n    declarations: [ AppComponent ],\n    imports: [ BrowserModule, CIModule ],\n    providers: [\n      {provide: CIConfig, useValue: ciConfig}\n    ],\n    bootstrap: [ AppComponent ]\n})\nexport class MyAppModule {}";
+        this.implement = "<ci-img src=\"img.jpg\" alt=\"Demo image\" ratio=\"1.5\"></ci-img>";
         this.images = [
             {
-                src: 'magnus-lindvall.jpg',
-                ratio: 4.896 / 3.264,
+                src: 'https://cloudimage.public.airstore.io/demo/luca-bravo-121932.jpg',
+                ratio: 4.538 / 1.932,
                 original_size: '4.8mb'
             },
             {
@@ -838,14 +848,14 @@ var AppComponent = /** @class */ (function () {
                 original_size: '0.5mb'
             },
             {
-                src: 'dino-reichmuth-9.jpg',
-                ratio: 6.616 / 3.744,
-                original_size: '9.7mb'
+                src: 'tim-patch.jpg',
+                ratio: 5.464 / 3.640,
+                original_size: '7.5mb'
             },
             {
-                src: 'ishan-seefromthesky.jpg',
-                ratio: 5.464 / 3.070,
-                original_size: '4.2mb'
+                src: 'veeterzy.jpg',
+                ratio: 5.760 / 3.840,
+                original_size: '8.5mb'
             },
             {
                 src: 'dino-reichmuth.jpg',
@@ -898,14 +908,15 @@ var AppComponent = /** @class */ (function () {
                 original_size: '8.2mb'
             },
             {
-                src: 'tim-patch.jpg',
-                ratio: 5.464 / 3.640,
-                original_size: '7.5mb'
+                src: 'dino-reichmuth-9.jpg',
+                ratio: 6.616 / 3.744,
+                b: 1.76,
+                original_size: '9.7mb'
             },
             {
-                src: 'veeterzy.jpg',
-                ratio: 5.760 / 3.840,
-                original_size: '8.5mb'
+                src: 'ishan-seefromthesky.jpg',
+                ratio: 5.464 / 3.070,
+                original_size: '4.2mb'
             },
             {
                 src: 'dino-reichmuth-1.jpg',
@@ -919,15 +930,15 @@ var AppComponent = /** @class */ (function () {
             }
         ];
     }
-    AppComponent.prototype.ngOnInit = function () {
+    AppComponent.prototype.getDevicePixelRatio = function () {
+        return Math.round(window.devicePixelRatio || 1);
     };
     AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
             selector: 'app-root',
             template: __webpack_require__(/*! ./app.component.html */ "./src/app/app.component.html"),
-            styles: [__webpack_require__(/*! ./app.component.css */ "./src/app/app.component.css")]
-        }),
-        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
+            styles: [__webpack_require__(/*! ./app.component.css */ "./src/app/app.component.css"), __webpack_require__(/*! ../assets/fonts/helvetica-neue.css */ "./src/assets/fonts/helvetica-neue.css")]
+        })
     ], AppComponent);
     return AppComponent;
 }());
@@ -940,27 +951,44 @@ var AppComponent = /** @class */ (function () {
 /*!*******************************!*\
   !*** ./src/app/app.module.ts ***!
   \*******************************/
-/*! exports provided: AppModule */
+/*! exports provided: hljsLanguages, AppModule */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hljsLanguages", function() { return hljsLanguages; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AppModule", function() { return AppModule; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "../../node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_platform_browser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/platform-browser */ "../../node_modules/@angular/platform-browser/fesm5/platform-browser.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/core */ "../../node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
 /* harmony import */ var lib__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lib */ "../../dist/lib/fesm5/ng-cloudimage-responsive.js");
+/* harmony import */ var ngx_highlightjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ngx-highlightjs */ "../../node_modules/ngx-highlightjs/fesm5/ngx-highlightjs.js");
+/* harmony import */ var highlight_js_lib_languages_typescript__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! highlight.js/lib/languages/typescript */ "../../node_modules/highlight.js/lib/languages/typescript.js");
+/* harmony import */ var highlight_js_lib_languages_typescript__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(highlight_js_lib_languages_typescript__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var highlight_js_lib_languages_xml__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! highlight.js/lib/languages/xml */ "../../node_modules/highlight.js/lib/languages/xml.js");
+/* harmony import */ var highlight_js_lib_languages_xml__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(highlight_js_lib_languages_xml__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _containerBox_containerBox_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./containerBox/containerBox.component */ "./src/app/containerBox/containerBox.component.ts");
 
 
 
 
 
+
+
+
+
+function hljsLanguages() {
+    return [
+        { name: 'typescript', func: highlight_js_lib_languages_typescript__WEBPACK_IMPORTED_MODULE_6___default.a },
+        { name: 'xml', func: highlight_js_lib_languages_xml__WEBPACK_IMPORTED_MODULE_7___default.a }
+    ];
+}
 var ciConfig = {
     token: 'demo',
     baseUrl: 'https://cloudimage.public.airstore.io/demo/',
     filters: 'q80.foil1',
-    queryString: '?&size_info=1',
+    queryString: '?&size_info=1&v2',
     lazyLoadOffset: 100,
     lazyLoading: true
 };
@@ -970,15 +998,18 @@ var AppModule = /** @class */ (function () {
     AppModule = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_2__["NgModule"])({
             declarations: [
-                _app_component__WEBPACK_IMPORTED_MODULE_3__["AppComponent"]
+                _app_component__WEBPACK_IMPORTED_MODULE_3__["AppComponent"],
+                _containerBox_containerBox_component__WEBPACK_IMPORTED_MODULE_8__["default"]
             ],
             imports: [
                 _angular_platform_browser__WEBPACK_IMPORTED_MODULE_1__["BrowserModule"],
-                lib__WEBPACK_IMPORTED_MODULE_4__["CIModule"]
+                lib__WEBPACK_IMPORTED_MODULE_4__["CIModule"],
+                ngx_highlightjs__WEBPACK_IMPORTED_MODULE_5__["HighlightModule"].forRoot({
+                    languages: hljsLanguages
+                })
             ],
             providers: [
-                { provide: lib__WEBPACK_IMPORTED_MODULE_4__["CIConfig"], useValue: ciConfig },
-                lib__WEBPACK_IMPORTED_MODULE_4__["CIService"]
+                { provide: lib__WEBPACK_IMPORTED_MODULE_4__["CIConfig"], useValue: ciConfig }
             ],
             bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_3__["AppComponent"]]
         })
@@ -987,6 +1018,65 @@ var AppModule = /** @class */ (function () {
 }());
 
 
+
+/***/ }),
+
+/***/ "./src/app/containerBox/containerBox.component.ts":
+/*!********************************************************!*\
+  !*** ./src/app/containerBox/containerBox.component.ts ***!
+  \********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "../../node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "../../node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "../../node_modules/rxjs/_esm5/index.js");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ "../../node_modules/rxjs/_esm5/operators/index.js");
+
+
+
+
+var ContainerBoxComponent = /** @class */ (function () {
+    function ContainerBoxComponent() {
+    }
+    ContainerBoxComponent.prototype.ngOnDestroy = function () {
+        this.resizeSubscription$.unsubscribe();
+    };
+    ContainerBoxComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.width = this.containerElem.nativeElement.offsetWidth;
+        this.resizeObservable$ = Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["fromEvent"])(window, 'resize').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["debounceTime"])(400));
+        this.resizeSubscription$ = this.resizeObservable$.subscribe(function () {
+            _this.width = _this.containerElem.nativeElement.offsetWidth;
+        });
+    };
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ViewChild"])('containerElem'),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ElementRef"])
+    ], ContainerBoxComponent.prototype, "containerElem", void 0);
+    ContainerBoxComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
+            selector: 'app-container-box',
+            template: "<div class=\"container-width-box\" #containerElem>container width: <span>{{width}}</span> px</div>"
+        })
+    ], ContainerBoxComponent);
+    return ContainerBoxComponent;
+}());
+/* harmony default export */ __webpack_exports__["default"] = (ContainerBoxComponent);
+
+
+/***/ }),
+
+/***/ "./src/assets/fonts/helvetica-neue.css":
+/*!*********************************************!*\
+  !*** ./src/assets/fonts/helvetica-neue.css ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "@font-face {\n  font-family: 'Helvetica Neue';\n  src: url('https://scaleflex.airstore.io/filerobot/assets/fonts/helvetica-neue/HelveticaNeue-Medium.eot');\n  src: url('https://scaleflex.airstore.io/filerobot/assets/fonts/helvetica-neue/HelveticaNeue-Medium.eot?#iefix') format('embedded-opentype'),\n  url('https://scaleflex.airstore.io/filerobot/assets/fonts/helvetica-neue/HelveticaNeue-Medium.woff2') format('woff2'),\n  url('https://scaleflex.airstore.io/filerobot/assets/fonts/helvetica-neue/HelveticaNeue-Medium.woff') format('woff'),\n  url('https://scaleflex.airstore.io/filerobot/assets/fonts/helvetica-neue/HelveticaNeue-Medium.ttf') format('truetype'),\n  url('https://scaleflex.airstore.io/filerobot/assets/fonts/helvetica-neue/HelveticaNeue-Medium.svg#HelveticaNeue-Medium') format('svg');\n  font-weight: 500;\n  font-style: normal;\n}\n\n@font-face {\n  font-family: 'Helvetica Neue';\n  src: url('https://scaleflex.airstore.io/filerobot/assets/fonts/helvetica-neue/HelveticaNeue-LightExt.eot');\n  src: url('https://scaleflex.airstore.io/filerobot/assets/fonts/helvetica-neue/HelveticaNeue-LightExt.eot?#iefix') format('embedded-opentype'),\n  url('https://scaleflex.airstore.io/filerobot/assets/fonts/helvetica-neue/HelveticaNeue-LightExt.woff2') format('woff2'),\n  url('https://scaleflex.airstore.io/filerobot/assets/fonts/helvetica-neue/HelveticaNeue-LightExt.woff') format('woff'),\n  url('https://scaleflex.airstore.io/filerobot/assets/fonts/helvetica-neue/HelveticaNeue-LightExt.ttf') format('truetype'),\n  url('https://scaleflex.airstore.io/filerobot/assets/fonts/helvetica-neue/HelveticaNeue-LightExt.svg#HelveticaNeue-LightExt') format('svg');\n  font-weight: 300;\n  font-style: normal;\n}\n\n\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2plY3RzL2V4YW1wbGUvc3JjL2Fzc2V0cy9mb250cy9oZWx2ZXRpY2EtbmV1ZS5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSw4QkFBOEI7RUFDOUIseUdBQXlHO0VBQ3pHOzs7O3lJQUl1STtFQUN2SSxpQkFBaUI7RUFDakIsbUJBQW1CO0NBQ3BCOztBQUVEO0VBQ0UsOEJBQThCO0VBQzlCLDJHQUEyRztFQUMzRzs7Ozs2SUFJMkk7RUFDM0ksaUJBQWlCO0VBQ2pCLG1CQUFtQjtDQUNwQiIsImZpbGUiOiJwcm9qZWN0cy9leGFtcGxlL3NyYy9hc3NldHMvZm9udHMvaGVsdmV0aWNhLW5ldWUuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiQGZvbnQtZmFjZSB7XG4gIGZvbnQtZmFtaWx5OiAnSGVsdmV0aWNhIE5ldWUnO1xuICBzcmM6IHVybCgnaHR0cHM6Ly9zY2FsZWZsZXguYWlyc3RvcmUuaW8vZmlsZXJvYm90L2Fzc2V0cy9mb250cy9oZWx2ZXRpY2EtbmV1ZS9IZWx2ZXRpY2FOZXVlLU1lZGl1bS5lb3QnKTtcbiAgc3JjOiB1cmwoJ2h0dHBzOi8vc2NhbGVmbGV4LmFpcnN0b3JlLmlvL2ZpbGVyb2JvdC9hc3NldHMvZm9udHMvaGVsdmV0aWNhLW5ldWUvSGVsdmV0aWNhTmV1ZS1NZWRpdW0uZW90PyNpZWZpeCcpIGZvcm1hdCgnZW1iZWRkZWQtb3BlbnR5cGUnKSxcbiAgdXJsKCdodHRwczovL3NjYWxlZmxleC5haXJzdG9yZS5pby9maWxlcm9ib3QvYXNzZXRzL2ZvbnRzL2hlbHZldGljYS1uZXVlL0hlbHZldGljYU5ldWUtTWVkaXVtLndvZmYyJykgZm9ybWF0KCd3b2ZmMicpLFxuICB1cmwoJ2h0dHBzOi8vc2NhbGVmbGV4LmFpcnN0b3JlLmlvL2ZpbGVyb2JvdC9hc3NldHMvZm9udHMvaGVsdmV0aWNhLW5ldWUvSGVsdmV0aWNhTmV1ZS1NZWRpdW0ud29mZicpIGZvcm1hdCgnd29mZicpLFxuICB1cmwoJ2h0dHBzOi8vc2NhbGVmbGV4LmFpcnN0b3JlLmlvL2ZpbGVyb2JvdC9hc3NldHMvZm9udHMvaGVsdmV0aWNhLW5ldWUvSGVsdmV0aWNhTmV1ZS1NZWRpdW0udHRmJykgZm9ybWF0KCd0cnVldHlwZScpLFxuICB1cmwoJ2h0dHBzOi8vc2NhbGVmbGV4LmFpcnN0b3JlLmlvL2ZpbGVyb2JvdC9hc3NldHMvZm9udHMvaGVsdmV0aWNhLW5ldWUvSGVsdmV0aWNhTmV1ZS1NZWRpdW0uc3ZnI0hlbHZldGljYU5ldWUtTWVkaXVtJykgZm9ybWF0KCdzdmcnKTtcbiAgZm9udC13ZWlnaHQ6IDUwMDtcbiAgZm9udC1zdHlsZTogbm9ybWFsO1xufVxuXG5AZm9udC1mYWNlIHtcbiAgZm9udC1mYW1pbHk6ICdIZWx2ZXRpY2EgTmV1ZSc7XG4gIHNyYzogdXJsKCdodHRwczovL3NjYWxlZmxleC5haXJzdG9yZS5pby9maWxlcm9ib3QvYXNzZXRzL2ZvbnRzL2hlbHZldGljYS1uZXVlL0hlbHZldGljYU5ldWUtTGlnaHRFeHQuZW90Jyk7XG4gIHNyYzogdXJsKCdodHRwczovL3NjYWxlZmxleC5haXJzdG9yZS5pby9maWxlcm9ib3QvYXNzZXRzL2ZvbnRzL2hlbHZldGljYS1uZXVlL0hlbHZldGljYU5ldWUtTGlnaHRFeHQuZW90PyNpZWZpeCcpIGZvcm1hdCgnZW1iZWRkZWQtb3BlbnR5cGUnKSxcbiAgdXJsKCdodHRwczovL3NjYWxlZmxleC5haXJzdG9yZS5pby9maWxlcm9ib3QvYXNzZXRzL2ZvbnRzL2hlbHZldGljYS1uZXVlL0hlbHZldGljYU5ldWUtTGlnaHRFeHQud29mZjInKSBmb3JtYXQoJ3dvZmYyJyksXG4gIHVybCgnaHR0cHM6Ly9zY2FsZWZsZXguYWlyc3RvcmUuaW8vZmlsZXJvYm90L2Fzc2V0cy9mb250cy9oZWx2ZXRpY2EtbmV1ZS9IZWx2ZXRpY2FOZXVlLUxpZ2h0RXh0LndvZmYnKSBmb3JtYXQoJ3dvZmYnKSxcbiAgdXJsKCdodHRwczovL3NjYWxlZmxleC5haXJzdG9yZS5pby9maWxlcm9ib3QvYXNzZXRzL2ZvbnRzL2hlbHZldGljYS1uZXVlL0hlbHZldGljYU5ldWUtTGlnaHRFeHQudHRmJykgZm9ybWF0KCd0cnVldHlwZScpLFxuICB1cmwoJ2h0dHBzOi8vc2NhbGVmbGV4LmFpcnN0b3JlLmlvL2ZpbGVyb2JvdC9hc3NldHMvZm9udHMvaGVsdmV0aWNhLW5ldWUvSGVsdmV0aWNhTmV1ZS1MaWdodEV4dC5zdmcjSGVsdmV0aWNhTmV1ZS1MaWdodEV4dCcpIGZvcm1hdCgnc3ZnJyk7XG4gIGZvbnQtd2VpZ2h0OiAzMDA7XG4gIGZvbnQtc3R5bGU6IG5vcm1hbDtcbn1cblxuIl19 */"
 
 /***/ }),
 
