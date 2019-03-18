@@ -1,4 +1,4 @@
-[![Release](https://img.shields.io/badge/release-v1.0.0-blue.svg)](https://github.com/scaleflex/ng-cloudimage-responsive/releases)
+[![Release](https://img.shields.io/badge/release-v1.0.1-blue.svg)](https://github.com/scaleflex/ng-cloudimage-responsive/releases)
 [![Free plan](https://img.shields.io/badge/price-includes%20free%20plan-green.svg)](https://www.cloudimage.io/en/home#b38181a6-b9c8-4015-9742-7b1a1ad382d5)
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)](#contributing)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -22,6 +22,8 @@
 		<a href="#table_of_contents">Docs</a>
 		•
 		<a href="https://scaleflex.github.io/ng-cloudimage-responsive/" target="_blank">Demo</a>
+		•
+		<a href="https://codesandbox.io/s/qr6zzr8rj?fontsize=14&module=%2Fsrc%2Fapp%2Fapp.module.ts" target="_blank">Code Sandbox</a>
 		•
 		<a href="#" target="_blank">Why?</a>
 	</strong>
@@ -171,7 +173,7 @@ Applies a nice interlacing effect for preview transition
 
 ### filters
 
-###### Type: **String** | Default: **'n'** | _optional_
+###### Type: **String** | Default: **'q35.foil1'** | _optional_
 
 Applies default Cloudimage filters to your image, e.g. fcontrast, fpixelate, fgaussian, backtransparent,
 rotation...  Multiple filters can be applied, separated by "```.```" (dot).

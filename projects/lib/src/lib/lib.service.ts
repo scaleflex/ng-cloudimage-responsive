@@ -18,7 +18,7 @@ export class CIService {
       width = '400',
       height = '300',
       operation = 'width',
-      filters = 'n',
+      filters = 'q35.foil1',
       placeholderBackground = '#f4f4f4',
       baseUrl = '/',
       presets,

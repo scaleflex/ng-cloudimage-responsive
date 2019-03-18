@@ -22,13 +22,11 @@ import {debounceTime} from 'rxjs/operators';
             *ngFor="let source of getRestSources()"
             [media]="source.mediaQuery || ''"
             [attr.lazyLoad]="source.srcSet || ''"
-            [srcset]="source.srcSet || ''"
             (load)="onImageLoad()"
           />
           <source
             *ngIf="getFirstSource()"
             [attr.lazyLoad]="firstSource.srcSet || ''"
-            [srcset]="firstSource.srcSet || ''"
             (load)="onImageLoad()"
           />
           <img
@@ -55,13 +53,11 @@ import {debounceTime} from 'rxjs/operators';
           <source
             *ngFor="let source of restSources"
             [media]="source.mediaQuery || ''"
-            [attr.lazyLoad]="source.srcSet || ''"
             [srcset]="source.srcSet || ''"
             (load)="onImageLoad()"
           />
           <source
             *ngIf="firstSource"
-            [attr.lazyLoad]="firstSource.srcSet || ''"
             [srcset]="firstSource.srcSet || ''"
             (load)="onImageLoad()"
           />
