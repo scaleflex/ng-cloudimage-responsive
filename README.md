@@ -25,7 +25,7 @@
 		•
 		<a href="https://codesandbox.io/s/qr6zzr8rj?fontsize=14&module=%2Fsrc%2Fapp%2Fapp.module.ts" target="_blank">Code Sandbox</a>
 		•
-		<a href="#" target="_blank">Why?</a>
+		<a href="https://medium.com/@dmitry_82269/responsive-images-in-2019-now-easier-than-ever-b76e5a43c074" target="_blank">Why?</a>
 	</strong>
 </p>
 
