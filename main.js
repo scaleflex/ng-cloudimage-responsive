@@ -321,10 +321,10 @@ var CIService = /** @class */ (function () {
          */
         function (string) {
             /** @type {?} */
-            var groups = string.match(/((?<variable>[a-z_][a-z_]*)|(?<media>\([\S\s]*\)))\s*(?<size>[0-9xp]*)/).groups;
+            var groups = string.match(/(([a-z_][a-z_]*)|(\([\S\s]*\)))\s*([0-9xp]*)/);
             /** @type {?} */
-            var media = groups.media ? groups.media : config.presets[groups.variable];
-            sizes.push({ media: media, size: groups.size });
+            var media = groups[3] ? groups[3] : config.presets[groups[2]];
+            sizes.push({ media: media, size: groups[4] });
         }));
         return sizes;
     };
