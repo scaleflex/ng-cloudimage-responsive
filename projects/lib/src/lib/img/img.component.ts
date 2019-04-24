@@ -1,4 +1,4 @@
-import {Component, OnInit, AfterViewInit, Input, ViewChild, ElementRef, OnDestroy} from '@angular/core';
+import {Component, OnInit, AfterViewInit, Input, ViewChild, ElementRef, OnDestroy, EventEmitter, Output} from '@angular/core';
 import {CIService} from '../lib.service';
 import {DomSanitizer} from '@angular/platform-browser';
 import {fromEvent, Observable, Subscription} from 'rxjs';
@@ -22,12 +22,12 @@ import {debounceTime} from 'rxjs/operators';
             *ngFor="let source of getRestSources()"
             [media]="source.mediaQuery || ''"
             [attr.lazyLoad]="source.srcSet || ''"
-            (load)="onImageLoad()"
+            (load)="onImageLoad($event)"
           />
           <source
             *ngIf="getFirstSource()"
             [attr.lazyLoad]="firstSource.srcSet || ''"
-            (load)="onImageLoad()"
+            (load)="onImageLoad($event)"
           />
           <img
             style="display:block;width:100%;opacity:1;top:0;left:0;"
@@ -36,7 +36,7 @@ import {debounceTime} from 'rxjs/operators';
             [style.transform]="getTransformStyle()"
             [style.transition]="getTransitionStyle()"
             [style.filter]="getFilterStyle()"
-            (load)="onImageLoad()"
+            (load)="onImageLoad($event)"
             [lazyLoad]="!isPreview ? cloudimageUrl : (isPreviewLoaded ? cloudimageUrl : previewCloudimageUrl)"
             [offset]="offset"
             [alt]="">
@@ -54,12 +54,12 @@ import {debounceTime} from 'rxjs/operators';
             *ngFor="let source of restSources"
             [media]="source.mediaQuery || ''"
             [srcset]="source.srcSet || ''"
-            (load)="onImageLoad()"
+            (load)="onImageLoad($event)"
           />
           <source
             *ngIf="firstSource"
             [srcset]="firstSource.srcSet || ''"
-            (load)="onImageLoad()"
+            (load)="onImageLoad($event)"
           />
           <img
             style="display:block;width:100%;opacity:1;top:0;left:0;"
@@ -68,7 +68,7 @@ import {debounceTime} from 'rxjs/operators';
             [style.transform]="getTransformStyle()"
             [style.transition]="getTransitionStyle()"
             [style.filter]="getFilterStyle()"
-            (load)="onImageLoad()"
+            (load)="onImageLoad($event)"
             [src]="!isPreview ? cloudimageUrl : (isPreviewLoaded ? cloudimageUrl : previewCloudimageUrl)"
             [alt]="">
         </picture>
@@ -91,6 +91,7 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() ratio: number;
   @Input() offset = 100;
   @Input() ngSwitch: any;
+  @Output() imageLoaded: EventEmitter<any> = new EventEmitter<any>()
 
   resizeObservable$: Observable<Event>;
   resizeSubscription$: Subscription;
@@ -181,7 +182,7 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  onImageLoad() {
+  onImageLoad($event) {
     if (!this.isPreview) {
       this.isPreviewLoaded = true;
       this.isLoaded = true;
@@ -190,6 +191,7 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.isPreviewLoaded = true;
     }
+    this.imageLoaded.emit($event);
   }
 
   getRestSources() {
