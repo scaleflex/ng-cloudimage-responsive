@@ -161,8 +161,8 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isPreview) {
       const previewConfig = {...config, queryString: ''};
       previewCloudimageUrl = isAdaptive ?
-        this.ciService.generateUrl('width', (parentContainerWidth / 5), 'q10.foil1', imgSrc, previewConfig) :
-        this.ciService.generateUrl(operation, resultSize.split('x').map(item => item / 5).join('x'), 'q10.foil1', imgSrc, previewConfig);
+        this.ciService.generateUrl('width', (Math.floor(parentContainerWidth / 5)), 'q10.foil1', imgSrc, previewConfig) :
+        this.ciService.generateUrl(operation, resultSize.split('x').map(item => Math.floor(item / 5)).join('x'), 'q10.foil1', imgSrc, previewConfig);
       previewSources = isAdaptive ?
         this.ciService.generateSources(operation, resultSize, 'q10.foil1', imgSrc, isAdaptive, previewConfig, true) : [];
     }

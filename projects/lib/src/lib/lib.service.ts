@@ -149,7 +149,7 @@ export class CIService {
     if (isAdaptive) {
       size.forEach(({ size: nextSize, media: mediaQuery}) => {
         if (isPreview) {
-          nextSize = nextSize.split('x').map(sizeNext => sizeNext / 5).join('x');
+          nextSize = nextSize.split('x').map(sizeNext => Math.floor(sizeNext / 5)).join('x');
           filters = 'q10.foil1';
         }
 
@@ -157,7 +157,7 @@ export class CIService {
       });
     } else {
       if (isPreview) {
-        size = size.split('x').map(sizeNext => sizeNext / 5).join('x');
+        size = size.split('x').map(sizeNext => Math.floor(sizeNext / 5)).join('x');
         filters = 'q10.foil1';
       }
 
