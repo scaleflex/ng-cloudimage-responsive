@@ -138,7 +138,8 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
 
   processImage() {
     const imgNode = (this.imgElem || this.pictureElem).nativeElement;
-    const {config} = this.ciService;
+    const {config = {}} = this.ciService;
+    const { previewQualityFactor } = config;
     const operation = this.operation || this.o || config.operation;
     const parentContainerWidth = this.ciService.getParentWidth(imgNode, config);
     let size = this.size || this.s || config.size || parentContainerWidth;
@@ -161,10 +162,10 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isPreview) {
       const previewConfig = {...config, queryString: ''};
       previewCloudimageUrl = isAdaptive ?
-        this.ciService.generateUrl('width', (Math.floor(parentContainerWidth / 5)), 'q10.foil1', imgSrc, previewConfig) :
-        this.ciService.generateUrl(operation, resultSize.split('x').map(item => Math.floor(item / 5)).join('x'), 'q10.foil1', imgSrc, previewConfig);
+        this.ciService.generateUrl('width', (Math.floor(parentContainerWidth / previewQualityFactor)), filters, imgSrc, previewConfig) :
+        this.ciService.generateUrl(operation, resultSize.split('x').map(item => Math.floor(item / previewQualityFactor)).join('x'), filters, imgSrc, previewConfig);
       previewSources = isAdaptive ?
-        this.ciService.generateSources(operation, resultSize, 'q10.foil1', imgSrc, isAdaptive, previewConfig, true) : [];
+        this.ciService.generateSources(operation, resultSize, filters, imgSrc, isAdaptive, previewConfig, true) : [];
     }
 
     this.previewCloudimageUrl = previewCloudimageUrl;

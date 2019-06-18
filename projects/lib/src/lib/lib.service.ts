@@ -18,7 +18,7 @@ export class CIService {
       width = '400',
       height = '300',
       operation = 'width',
-      filters = 'q35.foil1',
+      filters = 'foil1',
       placeholderBackground = '#f4f4f4',
       baseUrl = '/',
       presets,
@@ -48,6 +48,7 @@ export class CIService {
         },
       queryString,
       innerWidth: window.innerWidth,
+      previewQualityFactor: 10
       // isChrome: /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)
     };
   }
@@ -144,21 +145,20 @@ export class CIService {
   }
 
   generateSources(operation, size, filters, imgSrc, isAdaptive, config, isPreview) {
+    const { previewQualityFactor } = config;
     const sources = [];
 
     if (isAdaptive) {
       size.forEach(({ size: nextSize, media: mediaQuery}) => {
         if (isPreview) {
-          nextSize = nextSize.split('x').map(sizeNext => Math.floor(sizeNext / 5)).join('x');
-          filters = 'q10.foil1';
+          nextSize = nextSize.split('x').map(sizeNext => Math.floor(sizeNext / previewQualityFactor)).join('x');
         }
 
         sources.push({ mediaQuery, srcSet: this.generateSrcset(operation, nextSize, filters, imgSrc, config) });
       });
     } else {
       if (isPreview) {
-        size = size.split('x').map(sizeNext => Math.floor(sizeNext / 5)).join('x');
-        filters = 'q10.foil1';
+        size = size.split('x').map(sizeNext => Math.floor(sizeNext / previewQualityFactor)).join('x');
       }
 
       sources.push({
