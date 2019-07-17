@@ -8,7 +8,7 @@ import {debounceTime} from 'rxjs/operators';
 })
 
 export default class ContainerBoxComponent implements OnInit, OnDestroy {
-  @ViewChild('containerElem') containerElem: ElementRef;
+  @ViewChild('containerElem', null) containerElem: ElementRef;
 
   resizeObservable$: Observable<Event>;
   resizeSubscription$: Subscription;
