@@ -79,8 +79,8 @@ import {debounceTime} from 'rxjs/operators';
   `
 })
 export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('imgElem') imgElem: ElementRef;
-  @ViewChild('pictureElem') pictureElem: ElementRef;
+  @ViewChild('imgElem', { static: false }) imgElem: ElementRef;
+  @ViewChild('pictureElem', { static: false }) pictureElem: ElementRef;
   @Input() src: string;
   @Input() class: string = '';
   @Input() alt: string;
