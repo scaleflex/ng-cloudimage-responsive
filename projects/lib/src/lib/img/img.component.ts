@@ -1,5 +1,6 @@
 import {
-  Component, OnInit, AfterViewInit, Input, ViewChild, ElementRef, OnDestroy, EventEmitter, Output, ChangeDetectorRef
+  Component, Input, Output, ViewChild, ElementRef, EventEmitter, ChangeDetectorRef, SimpleChanges,
+  OnInit, OnChanges, OnDestroy, AfterViewInit
 } from '@angular/core';
 import {CIService} from '../lib.service';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -78,7 +79,7 @@ import {debounceTime} from 'rxjs/operators';
     </ng-container>
   `
 })
-export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @ViewChild('imgElem', {static: false}) imgElem: ElementRef;
   @ViewChild('pictureElem', {static: false}) pictureElem: ElementRef;
   @Input() src: string;
@@ -136,6 +137,15 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.windowInnerWidth = window.innerWidth;
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    const srcChanged = changes.src && changes.src.previousValue !== changes.src.currentValue && !changes.src.firstChange;
+    const ratioChanged = changes.ratio && changes.ratio.previousValue !== changes.ratio.currentValue && !changes.ratio.firstChange;
+
+    if (srcChanged || ratioChanged) {
+      this.processImage();
+    }
   }
 
   ngAfterViewInit() {
