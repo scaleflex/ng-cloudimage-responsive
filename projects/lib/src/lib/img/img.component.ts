@@ -1,5 +1,6 @@
 import {
-  Component, OnInit, AfterViewInit, Input, ViewChild, ElementRef, OnDestroy, EventEmitter, Output, ChangeDetectorRef
+  Component, Input, Output, ViewChild, ElementRef, EventEmitter, ChangeDetectorRef, SimpleChanges,
+  OnInit, OnChanges, OnDestroy, AfterViewInit
 } from '@angular/core';
 import {CIService} from '../lib.service';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -78,9 +79,9 @@ import {debounceTime} from 'rxjs/operators';
     </ng-container>
   `
 })
-export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('imgElem') imgElem: ElementRef;
-  @ViewChild('pictureElem') pictureElem: ElementRef;
+export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+  @ViewChild('imgElem', {static: false}) imgElem: ElementRef;
+  @ViewChild('pictureElem', {static: false}) pictureElem: ElementRef;
   @Input() src: string;
   @Input() class: string = '';
   @Input() alt: string;
@@ -93,7 +94,7 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() ratio: number;
   @Input() offset = 100;
   @Input() ngSwitch: any;
-  @Output() imageLoaded: EventEmitter<any> = new EventEmitter<any>()
+  @Output() imageLoaded: EventEmitter<any> = new EventEmitter<any>();
 
   resizeObservable$: Observable<Event>;
   resizeSubscription$: Subscription;
@@ -138,6 +139,15 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    const srcChanged = changes.src && changes.src.previousValue !== changes.src.currentValue && !changes.src.firstChange;
+    const ratioChanged = changes.ratio && changes.ratio.previousValue !== changes.ratio.currentValue && !changes.ratio.firstChange;
+
+    if (srcChanged || ratioChanged) {
+      this.processImage();
+    }
+  }
+
   ngAfterViewInit() {
     this.processImage();
   }
@@ -145,7 +155,7 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
   processImage() {
     const imgNode = (this.imgElem || this.pictureElem).nativeElement;
     const {config = {}} = this.ciService;
-    const { previewQualityFactor } = config;
+    const {previewQualityFactor} = config;
     const operation = this.operation || this.o || config.operation;
     const parentContainerWidth = this.ciService.getParentWidth(imgNode, config);
     let size = this.size || this.s || config.size || parentContainerWidth;
@@ -169,7 +179,13 @@ export class ImgComponent implements OnInit, AfterViewInit, OnDestroy {
       const previewConfig = {...config, queryString: ''};
       previewCloudimageUrl = isAdaptive ?
         this.ciService.generateUrl('width', (Math.floor(parentContainerWidth / previewQualityFactor)), filters, imgSrc, previewConfig) :
-        this.ciService.generateUrl(operation, resultSize.split('x').map(item => Math.floor(item / previewQualityFactor)).join('x'), filters, imgSrc, previewConfig);
+        this.ciService.generateUrl(
+          operation,
+          resultSize.split('x').map(item => Math.floor(item / previewQualityFactor)).join('x'),
+          filters,
+          imgSrc,
+          previewConfig
+        );
       previewSources = isAdaptive ?
         this.ciService.generateSources(operation, resultSize, filters, imgSrc, isAdaptive, previewConfig, true) : [];
     }
