@@ -31,7 +31,7 @@
     "core-js": "^3.1.4",
     "fibers": "^4.0.1",
     "highlight.js": "^9.15.8",
-    "ng-lazyload-image": "^6.0.0",
+    "ng-lazyload-image": "^7.0.1",
     "ngx-highlightjs": "^3.0.3",
     "rxjs": "~6.5.2",
     "zone.js": "^0.9.1"
