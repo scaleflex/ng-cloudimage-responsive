@@ -36,6 +36,7 @@ import {debounceTime} from 'rxjs/operators';
             style="display:block;width:100%;opacity:1;top:0;left:0;"
             [style.position]="getPositionStyle()"
             [style.height]="getImgHeight()"
+            [style.paddingBottom]="getPicturePaddingBottom()"
             [style.transform]="getTransformStyle()"
             [style.transition]="getTransitionStyle()"
             [style.filter]="getFilterStyle()"
