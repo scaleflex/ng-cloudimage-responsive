@@ -43,7 +43,8 @@ import {debounceTime} from 'rxjs/operators';
             (load)="onImageLoad($event)"
             [lazyLoad]="!isPreview ? cloudimageUrl : (isPreviewLoaded ? cloudimageUrl : previewCloudimageUrl)"
             [offset]="offset"
-            [alt]="">
+            [attr.alt]="alt"
+          />
         </picture>
       </ng-container>
       <div *ngSwitchCase="false">
@@ -74,7 +75,8 @@ import {debounceTime} from 'rxjs/operators';
             [style.filter]="getFilterStyle()"
             (load)="onImageLoad($event)"
             [src]="!isPreview ? cloudimageUrl : (isPreviewLoaded ? cloudimageUrl : previewCloudimageUrl)"
-            [alt]="">
+            [attr.alt]="alt"
+          />
         </picture>
       </div>
     </ng-container>
