@@ -12,7 +12,7 @@ import {debounceTime} from 'rxjs/operators';
   template: `
     <picture #pictureElem *ngIf="!isProcessed"></picture>
 
-    <ng-container [ngSwitch]="lazyLoading">
+    <ng-container [ngSwitch]="isLazyLoadingMode">
       <ng-container *ngSwitchCase="true">
         <picture
           [class]="class + ' cloudimage-image-picture cloudimage-image-' + (isLoaded ? 'loaded' : 'loading')"
@@ -97,6 +97,7 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
   @Input() ratio: number;
   @Input() offset = 100;
   @Input() ngSwitch: any;
+  @Input() lazyLoading: boolean | null = null;
   @Output() imageLoaded: EventEmitter<any> = new EventEmitter<any>();
 
   resizeObservable$: Observable<Event>;
@@ -116,17 +117,22 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
   isPreviewLoaded: boolean;
   isRatio: boolean;
   ratioBySize: number;
-  lazyLoading: boolean;
   imageHeight: number;
   windowInnerWidth: number = window.innerWidth;
+
+  get isLazyLoadingMode() {
+    if (typeof this.lazyLoading === 'boolean') {
+      return this.lazyLoading;
+    }
+
+    return this.ciService.config.lazyLoading || false;
+  }
 
   constructor(
     private ciService: CIService,
     private _sanitizer: DomSanitizer,
     private cd: ChangeDetectorRef,
-  ) {
-    this.lazyLoading = ciService.config.lazyLoading;
-  }
+  ) {}
 
   ngOnDestroy() {
     this.resizeSubscription$.unsubscribe();
@@ -170,13 +176,14 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
     const isRelativeUrlPath = this.ciService.checkIfRelativeUrlPath(this.src);
     const imgSrc = this.ciService.getImgSrc(this.src, isRelativeUrlPath, config.baseUrl);
     const resultSize = isAdaptive ? size : this.ciService.getSizeAccordingToPixelRatio(size);
-    this.isPreview = !config.isChrome && (parentContainerWidth > 400) && config.lazyLoading;
+    this.isPreview = !config.isChrome && (parentContainerWidth > 400) && this.isLazyLoadingMode;
     this.cloudimageUrl = isAdaptive ?
       this.ciService.generateUrl('width', this.ciService.getSizeAccordingToPixelRatio(parentContainerWidth), filters, imgSrc, config) :
       this.ciService.generateUrl(operation, resultSize, filters, imgSrc, config);
     this.sources = isAdaptive ?
       this.ciService.generateSources(operation, resultSize, filters, imgSrc, isAdaptive, config, false) : [];
-    let previewCloudimageUrl, previewSources;
+    let previewCloudimageUrl;
+    let previewSources;
 
     if (this.isPreview) {
       const previewConfig = {...config, queryString: ''};
