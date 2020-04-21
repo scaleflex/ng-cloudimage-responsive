@@ -1,0 +1,67 @@
+<picture *ngIf="!isProcessed" #pictureElem></picture>
+
+<ng-container *ngIf="isProcessed">
+  <picture
+    [class]="class + ' cloudimage-image-picture cloudimage-image-' + (isLoaded ? 'loaded' : 'loading')"
+    style="display:block;width:100%;overflow:hidden;position:relative;"
+    [style.paddingBottom]="getPicturePaddingBottom()"
+    [style.background]="getPictureBackground()"
+    #imgElem
+    *ngIf="isProcessed"
+  >
+    <ng-container *ngIf="isLazyLoadingMode; then lazyLoadingTpl else notLazyLoadingTpl"></ng-container>
+  </picture>
+</ng-container>
+
+<ng-template #lazyLoadingTpl>
+  <source
+    *ngFor="let source of getRestSources()"
+    [media]="source.mediaQuery || ''"
+    [attr.lazyLoad]="source.srcSet || ''"
+    (load)="onImageLoad($event)"
+  />
+  <source
+    *ngIf="getFirstSource()"
+    [attr.lazyLoad]="firstSource.srcSet || ''"
+    (load)="onImageLoad($event)"
+  />
+  <img
+    style="display:block;width:100%;opacity:1;top:0;left:0;"
+    [style.position]="getPositionStyle()"
+    [style.height]="getImgHeight()"
+    [style.paddingBottom]="getPicturePaddingBottom()"
+    [style.transform]="getTransformStyle()"
+    [style.transition]="getTransitionStyle()"
+    [style.filter]="getFilterStyle()"
+    (load)="onImageLoad($event)"
+    [lazyLoad]="!isPreview || isPreviewLoaded ? cloudimageUrl : previewCloudimageUrl"
+    [offset]="offset"
+    [attr.alt]="alt"
+  />
+</ng-template>
+
+<ng-template #notLazyLoadingTpl>
+  <source
+    *ngFor="let source of restSources"
+    [media]="source.mediaQuery || ''"
+    [srcset]="source.srcSet || ''"
+    (load)="onImageLoad($event)"
+  />
+  <source
+    *ngIf="firstSource"
+    [srcset]="firstSource.srcSet || ''"
+    (load)="onImageLoad($event)"
+  />
+  <img
+    *ngIf="!(isSsr && emptyOnSsr)"
+    style="display:block;width:100%;opacity:1;top:0;left:0;"
+    [style.position]="getPositionStyle()"
+    [style.height]="getImgHeight()"
+    [style.transform]="getTransformStyle()"
+    [style.transition]="getTransitionStyle()"
+    [style.filter]="getFilterStyle()"
+    (load)="onImageLoad($event)"
+    [src]="!isPreview || isPreviewLoaded ? cloudimageUrl : previewCloudimageUrl"
+    [attr.alt]="alt"
+  />
+</ng-template>

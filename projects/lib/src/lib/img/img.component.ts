@@ -1,92 +1,22 @@
 import {
   Component, Input, Output, ViewChild, ElementRef, EventEmitter, ChangeDetectorRef, SimpleChanges,
-  OnInit, OnChanges, OnDestroy, AfterViewInit
+  OnInit, OnChanges, OnDestroy, AfterViewInit, Inject, PLATFORM_ID
 } from '@angular/core';
 import {CIService} from '../lib.service';
 import {DomSanitizer} from '@angular/platform-browser';
 import {fromEvent, Observable, Subscription} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
+import {isPlatformServer} from '@angular/common';
 
 @Component({
   selector: 'ci-img',
-  template: `
-    <picture #pictureElem *ngIf="!isProcessed"></picture>
-
-    <ng-container [ngSwitch]="isLazyLoadingMode">
-      <ng-container *ngSwitchCase="true">
-        <picture
-          [class]="class + ' cloudimage-image-picture cloudimage-image-' + (isLoaded ? 'loaded' : 'loading')"
-          style="display:block;width:100%;overflow:hidden;position:relative;"
-          [style.paddingBottom]="getPicturePaddingBottom()"
-          [style.background]="getPictureBackground()"
-          #imgElem
-          *ngIf="isProcessed">
-          <source
-            *ngFor="let source of getRestSources()"
-            [media]="source.mediaQuery || ''"
-            [attr.lazyLoad]="source.srcSet || ''"
-            (load)="onImageLoad($event)"
-          />
-          <source
-            *ngIf="getFirstSource()"
-            [attr.lazyLoad]="firstSource.srcSet || ''"
-            (load)="onImageLoad($event)"
-          />
-          <img
-            style="display:block;width:100%;opacity:1;top:0;left:0;"
-            [style.position]="getPositionStyle()"
-            [style.height]="getImgHeight()"
-            [style.paddingBottom]="getPicturePaddingBottom()"
-            [style.transform]="getTransformStyle()"
-            [style.transition]="getTransitionStyle()"
-            [style.filter]="getFilterStyle()"
-            (load)="onImageLoad($event)"
-            [lazyLoad]="!isPreview ? cloudimageUrl : (isPreviewLoaded ? cloudimageUrl : previewCloudimageUrl)"
-            [offset]="offset"
-            [attr.alt]="alt"
-          />
-        </picture>
-      </ng-container>
-      <div *ngSwitchCase="false">
-        <picture
-          [class]="class + ' cloudimage-image-picture cloudimage-image-' + (isLoaded ? 'loaded' : 'loading')"
-          style="display:block;width:100%;overflow:hidden;position:relative;"
-          [style.paddingBottom]="getPicturePaddingBottom()"
-          [style.background]="getPictureBackground()"
-          #imgElem
-          *ngIf="isProcessed">
-          <source
-            *ngFor="let source of restSources"
-            [media]="source.mediaQuery || ''"
-            [srcset]="source.srcSet || ''"
-            (load)="onImageLoad($event)"
-          />
-          <source
-            *ngIf="firstSource"
-            [srcset]="firstSource.srcSet || ''"
-            (load)="onImageLoad($event)"
-          />
-          <img
-            style="display:block;width:100%;opacity:1;top:0;left:0;"
-            [style.position]="getPositionStyle()"
-            [style.height]="getImgHeight()"
-            [style.transform]="getTransformStyle()"
-            [style.transition]="getTransitionStyle()"
-            [style.filter]="getFilterStyle()"
-            (load)="onImageLoad($event)"
-            [src]="!isPreview ? cloudimageUrl : (isPreviewLoaded ? cloudimageUrl : previewCloudimageUrl)"
-            [attr.alt]="alt"
-          />
-        </picture>
-      </div>
-    </ng-container>
-  `
+  templateUrl: './img.component.html',
 })
 export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @ViewChild('imgElem', {static: false}) imgElem: ElementRef;
   @ViewChild('pictureElem', {static: false}) pictureElem: ElementRef;
   @Input() src: string;
-  @Input() class: string = '';
+  @Input() class = '';
   @Input() alt: string;
   @Input() operation: string;
   @Input() o: string;
@@ -98,19 +28,20 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
   @Input() offset = 100;
   @Input() ngSwitch: any;
   @Input() lazyLoading: boolean | null = null;
+  @Input() emptyOnSsr = false;
   @Output() imageLoaded: EventEmitter<any> = new EventEmitter<any>();
 
   resizeObservable$: Observable<Event>;
   resizeSubscription$: Subscription;
   cloudimageUrl = '';
-  sources = [];
+  sources: any[] = [];
   firstSource = null;
   restSources = [];
   isLoaded = false;
   isProcessed = false;
   isPreview: boolean;
   previewCloudimageUrl: string;
-  previewSources: string;
+  previewSources: any[];
   isAdaptive: boolean;
   actualSize: string;
   parentContainerWidth: string;
@@ -119,8 +50,13 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
   ratioBySize: number;
   imageHeight: number;
   windowInnerWidth: number = window.innerWidth;
+  isSsr: boolean;
 
   get isLazyLoadingMode() {
+    if (this.isSsr) {
+      return false;
+    }
+
     if (typeof this.lazyLoading === 'boolean') {
       return this.lazyLoading;
     }
@@ -132,7 +68,10 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
     private ciService: CIService,
     private _sanitizer: DomSanitizer,
     private cd: ChangeDetectorRef,
-  ) {}
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {
+    this.isSsr = isPlatformServer(platformId);
+  }
 
   ngOnDestroy() {
     this.resizeSubscription$.unsubscribe();
