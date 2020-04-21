@@ -350,7 +350,7 @@ Property allows to override global lazyLoading config for specific images.
 
 ###### Type: **Bool** | Default: **false** | _optional_
 
-Allow to specify visibilyty behavior for SSR. 
+Allow to specify visibility behavior for SSR. 
 If you use SSR and want to use lazy loading for some images (maybe some images which are not on initial viewport) it's recommended to set emptyOnSsr to true. 
 
 ## <a name="browser_support"></a>Browser support
