@@ -340,6 +340,19 @@ the image position while image is loading.
 
 To see the full cloudimage documentation [click here](https://docs.cloudimage.io/go/cloudimage-documentation)
 
+### lazyLoading
+
+###### Type: **Bool** | Default: **undefined** | _optional_
+
+Property allows to override global lazyLoading config for specific images.
+
+### emptyOnSsr
+
+###### Type: **Bool** | Default: **false** | _optional_
+
+Allow to specify visibilyty behavior for SSR. 
+If you use SSR and want to use lazy loading for some images (maybe some images which are not on initial viewport) it's recommended to set emptyOnSsr to true. 
+
 ## <a name="browser_support"></a>Browser support
 
 Tested in all modern browsers and IE 11.
