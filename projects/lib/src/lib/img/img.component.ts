@@ -80,7 +80,12 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
   ngOnInit() {
     this.resizeObservable$ = fromEvent(window, 'resize').pipe(debounceTime(500));
     this.resizeSubscription$ = this.resizeObservable$.subscribe(() => {
-      if (this.isAdaptive || this.windowInnerWidth < window.innerWidth) {
+      /**
+       * Don't need to re-process image on window resize in isLazyLoadingMode, because it's provide an issue
+       * in <source [attr.lazyLoad] />. After image re-processed source elements lose srcset attritute and
+       * as the result user see not correct image.
+       */
+      if (!this.isLazyLoadingMode && (this.isAdaptive || this.windowInnerWidth < window.innerWidth)) {
         this.processImage();
       }
       this.windowInnerWidth = window.innerWidth;
