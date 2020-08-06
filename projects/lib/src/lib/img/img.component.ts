@@ -249,4 +249,38 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
 
     return this._sanitizer.bypassSecurityTrustStyle(result);
   }
+
+  getBasicImageStyles() {
+    const {config = {}} = this.ciService;
+    const operation = this.operation || this.o || config.operation;
+    let display = 'block';
+    let width;
+    let left = '0';
+    let maxWidth;
+    let maxHeight;
+
+    if (operation === 'fit') {
+      display = 'flex';
+      maxWidth = '100%';
+      maxHeight = '100%';
+      left = 'auto';
+    } else {
+      width = '100%';
+    }
+
+    const styles = {
+      display,
+      top: '0',
+      left,
+      width,
+      'max-width': maxWidth,
+      'max-height': maxHeight,
+      opacity: '1',
+    };
+
+    return Object.keys(styles)
+      .filter(propName => styles[propName])
+      .map(propName => `${propName}:${styles[propName]};`)
+      .join('');
+  }
 }

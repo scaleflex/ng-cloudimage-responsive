@@ -3,7 +3,7 @@
 <ng-container *ngIf="isProcessed">
   <picture
     [class]="class + ' cloudimage-image-picture cloudimage-image-' + (isLoaded ? 'loaded' : 'loading')"
-    style="display:block;width:100%;overflow:hidden;position:relative;"
+    style="display:flex;width:100%;overflow:hidden;position:relative;justify-content: center; align-items: center;"
     [style.paddingBottom]="getPicturePaddingBottom()"
     [style.background]="getPictureBackground()"
     #imgElem
@@ -18,15 +18,13 @@
     *ngFor="let source of getRestSources()"
     [media]="source.mediaQuery || ''"
     [attr.lazyLoad]="source.srcSet || ''"
-    (load)="onImageLoad($event)"
   />
   <source
     *ngIf="getFirstSource()"
     [attr.lazyLoad]="firstSource.srcSet || ''"
-    (load)="onImageLoad($event)"
   />
   <img
-    style="display:block;width:100%;opacity:1;top:0;left:0;"
+    [style]="getBasicImageStyles()"
     [style.position]="getPositionStyle()"
     [style.height]="getImgHeight()"
     [style.paddingBottom]="getPicturePaddingBottom()"
@@ -45,16 +43,14 @@
     *ngFor="let source of restSources"
     [media]="source.mediaQuery || ''"
     [srcset]="source.srcSet || ''"
-    (load)="onImageLoad($event)"
   />
   <source
     *ngIf="firstSource"
     [srcset]="firstSource.srcSet || ''"
-    (load)="onImageLoad($event)"
   />
   <img
     *ngIf="!(isSsr && emptyOnSsr)"
-    style="display:block;width:100%;opacity:1;top:0;left:0;"
+    [style]="getBasicImageStyles()"
     [style.position]="getPositionStyle()"
     [style.height]="getImgHeight()"
     [style.transform]="getTransformStyle()"
