@@ -244,6 +244,16 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
     return this._sanitizer.bypassSecurityTrustStyle(result);
   }
 
+  getImagePaddingBottom() {
+    let result = '';
+
+    if (this.isRatio && !this.isLoaded) {
+      result = (100 / (this.ratioBySize || this.ratio)) + '%';
+    }
+
+    return this._sanitizer.bypassSecurityTrustStyle(result);
+  }
+
   getPictureBackground() {
     const {config} = this.ciService;
     let result = 'transparent';
@@ -281,6 +291,7 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
       'max-width': maxWidth,
       'max-height': maxHeight,
       opacity: '1',
+      'box-sizing': 'content-box',
     };
 
     return Object.keys(styles)
