@@ -2,13 +2,14 @@ import {
   Component, Input, Output, ViewChild, ElementRef, EventEmitter, ChangeDetectorRef, SimpleChanges,
   OnInit, OnChanges, OnDestroy, AfterViewInit, Inject, PLATFORM_ID
 } from '@angular/core';
-import {CIService} from '../lib.service';
-import {DomSanitizer} from '@angular/platform-browser';
-import {fromEvent, Observable, Subscription} from 'rxjs';
-import {debounceTime} from 'rxjs/operators';
-import {isPlatformServer} from '@angular/common';
+import { CIService } from '../lib.service';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
+import { fromEvent, Observable, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import { isPlatformServer } from '@angular/common';
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'ci-img',
   templateUrl: './img.component.html',
 })
@@ -44,15 +45,15 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
   previewSources: any[];
   isAdaptive: boolean;
   actualSize: string;
-  parentContainerWidth: string;
+  parentContainerWidth: number;
   isPreviewLoaded: boolean;
   isRatio: boolean;
   ratioBySize: number;
   imageHeight: number;
-  windowInnerWidth: number = window.innerWidth;
+  windowInnerWidth: number;
   isSsr: boolean;
 
-  get isLazyLoadingMode() {
+  get isLazyLoadingMode(): boolean {
     if (this.isSsr) {
       return false;
     }
@@ -66,30 +67,38 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
 
   constructor(
     private ciService: CIService,
+    // tslint:disable-next-line:variable-name
     private _sanitizer: DomSanitizer,
     private cd: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: Object,
+    @Inject(PLATFORM_ID) private platformId: object
   ) {
     this.isSsr = isPlatformServer(platformId);
+    this.windowInnerWidth = this.ciService.getWindowInnerWidth();
   }
 
-  ngOnDestroy() {
-    this.resizeSubscription$.unsubscribe();
+  ngOnDestroy(): void {
+    if (!this.isSsr) {
+      this.resizeSubscription$.unsubscribe();
+    }
   }
 
-  ngOnInit() {
-    this.resizeObservable$ = fromEvent(window, 'resize').pipe(debounceTime(500));
-    this.resizeSubscription$ = this.resizeObservable$.subscribe(() => {
-      /**
-       * Don't need to re-process image on window resize in isLazyLoadingMode, because it's provide an issue
-       * in <source [attr.lazyLoad] />. After image re-processed source elements lose srcset attritute and
-       * as the result user see not correct image.
-       */
-      if (!this.isLazyLoadingMode && (this.isAdaptive || this.windowInnerWidth < window.innerWidth)) {
-        this.processImage();
-      }
-      this.windowInnerWidth = window.innerWidth;
-    });
+  ngOnInit(): void {
+    if (!this.isSsr) {
+      this.resizeObservable$ = fromEvent(window, 'resize').pipe(debounceTime(500));
+      this.resizeSubscription$ = this.resizeObservable$.subscribe(() => {
+        const windowInnerWidth = this.ciService.getWindowInnerWidth();
+
+        /**
+         * Don't need to re-process image on window resize in isLazyLoadingMode, because it's provide an issue
+         * in <source [attr.lazyLoad] />. After image re-processed source elements lose srcset attritute and
+         * as the result user see not correct image.
+         */
+        if (!this.isLazyLoadingMode && (this.isAdaptive || this.windowInnerWidth < windowInnerWidth)) {
+          this.processImage();
+        }
+        this.windowInnerWidth = windowInnerWidth;
+      });
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -101,11 +110,11 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
     }
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.processImage();
   }
 
-  processImage() {
+  processImage(): void {
     const imgNode = (this.imgElem || this.pictureElem).nativeElement;
     const {config = {}} = this.ciService;
     const {previewQualityFactor} = config;
@@ -158,7 +167,7 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
     this.cd.detectChanges();
   }
 
-  onImageLoad($event) {
+  onImageLoad($event): void {
     if (!this.isPreview) {
       this.isPreviewLoaded = true;
       this.isLoaded = true;
@@ -170,30 +179,30 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
     this.imageLoaded.emit($event);
   }
 
-  getRestSources() {
+  getRestSources(): object[] {
     const resultSources = [...(!this.isPreview ? this.sources : (this.isPreviewLoaded ? this.sources : this.previewSources))];
 
     return resultSources.slice(1).reverse();
   }
 
-  getFirstSource() {
+  getFirstSource(): object {
     const resultSources = [...(!this.isPreview ? this.sources : (this.isPreviewLoaded ? this.sources : this.previewSources))];
     this.firstSource = resultSources[0];
 
     return resultSources[0];
   }
 
-  getPositionStyle() {
+  getPositionStyle(): SafeStyle {
     return this._sanitizer.bypassSecurityTrustStyle(this.isRatio ? 'absolute' : 'relative');
   }
 
-  getImgHeight() {
+  getImgHeight(): SafeStyle {
     // todo check if we need 100% height
     // return this._sanitizer.bypassSecurityTrustStyle(this.isRatio ? '100%' : 'auto');
     return this._sanitizer.bypassSecurityTrustStyle(this.isRatio ? 'auto' : 'auto');
   }
 
-  getTransformStyle() {
+  getTransformStyle(): SafeStyle {
     const {config} = this.ciService;
     let result = 'none';
 
@@ -208,7 +217,7 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
     return this._sanitizer.bypassSecurityTrustStyle(result);
   }
 
-  getTransitionStyle() {
+  getTransitionStyle(): SafeStyle {
     const {config} = this.ciService;
     let result = 'none';
 
@@ -219,12 +228,12 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
     return this._sanitizer.bypassSecurityTrustStyle(result);
   }
 
-  getFilterStyle() {
+  getFilterStyle(): SafeStyle {
     const {config} = this.ciService;
     let result = 'none';
 
     if (config.imgLoadingAnimation) {
-      result = `blur(${Math.floor(parseInt(this.parentContainerWidth, 10) / 100)}px)`;
+      result = `blur(${Math.floor(parseInt(this.parentContainerWidth + '', 10) / 100)}px)`;
     }
 
     if (this.isLoaded && config.imgLoadingAnimation) {
@@ -234,7 +243,7 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
     return this._sanitizer.bypassSecurityTrustStyle(result);
   }
 
-  getPicturePaddingBottom() {
+  getPicturePaddingBottom(): SafeStyle {
     let result = '';
 
     if (this.isRatio) {
@@ -244,7 +253,7 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
     return this._sanitizer.bypassSecurityTrustStyle(result);
   }
 
-  getImagePaddingBottom() {
+  getImagePaddingBottom(): SafeStyle {
     let result = '';
 
     if (this.isRatio && !this.isLoaded) {
@@ -254,7 +263,7 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
     return this._sanitizer.bypassSecurityTrustStyle(result);
   }
 
-  getPictureBackground() {
+  getPictureBackground(): SafeStyle {
     const {config} = this.ciService;
     let result = 'transparent';
 
@@ -265,7 +274,7 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
     return this._sanitizer.bypassSecurityTrustStyle(result);
   }
 
-  getBasicImageStyles() {
+  getBasicImageStyles(): SafeStyle {
     const {config = {}} = this.ciService;
     const operation = this.operation || this.o || config.operation;
     let display = 'block';
