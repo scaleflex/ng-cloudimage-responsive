@@ -70,7 +70,7 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
     // tslint:disable-next-line:variable-name
     private _sanitizer: DomSanitizer,
     private cd: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: object
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isSsr = isPlatformServer(platformId);
     this.windowInnerWidth = this.ciService.getWindowInnerWidth();

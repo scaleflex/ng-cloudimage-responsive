@@ -9,7 +9,7 @@ export class CIService {
   config: any = {};
   isSsr = false;
 
-  constructor(ciConfig: CIConfig, @Inject(PLATFORM_ID) private platformId: object) {
+  constructor(ciConfig: CIConfig, @Inject(PLATFORM_ID) private platformId: Object) {
     this.isSsr = isPlatformServer(platformId);
 
     const {
