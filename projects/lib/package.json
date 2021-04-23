@@ -15,8 +15,7 @@
     "image resizing and CDN", "crop", "resize"
   ],
   "peerDependencies": {
-    "@angular/common": "^8.1.1",
-    "@angular/core": "^8.1.1",
+    "@angular/core": ">= 8.1.1",
     "rxjs": "^6.5.2"
   },
   "dependencies": {
