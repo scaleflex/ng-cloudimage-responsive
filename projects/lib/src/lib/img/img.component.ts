@@ -14,8 +14,8 @@ import { isPlatformServer } from '@angular/common';
   templateUrl: './img.component.html',
 })
 export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
-  @ViewChild('imgElem', {static: false}) imgElem: ElementRef;
-  @ViewChild('pictureElem', {static: false}) pictureElem: ElementRef;
+  @ViewChild('imgElem') imgElem: ElementRef;
+  @ViewChild('pictureElem') pictureElem: ElementRef;
   @Input() src: string;
   @Input() class = '';
   @Input() alt: string;
