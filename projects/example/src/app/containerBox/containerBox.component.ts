@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ElementRef, OnDestroy} from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy, AfterViewInit } from '@angular/core';
 import {fromEvent, Observable, Subscription} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 
@@ -8,7 +8,7 @@ import {debounceTime} from 'rxjs/operators';
 })
 
 export default class ContainerBoxComponent implements OnInit, OnDestroy {
-  @ViewChild('containerElem', null) containerElem: ElementRef;
+  @ViewChild('containerElem', { static: true }) containerElem: ElementRef;
 
   resizeObservable$: Observable<Event>;
   resizeSubscription$: Subscription;
