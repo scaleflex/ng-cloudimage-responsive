@@ -10,7 +10,7 @@
 	<img
 		height="175"
 		alt="The Lounge"
-		src="https://demo.cloudimg.io/height/350/n/https://scaleflex.airstore.io/filerobot/filerobot-cloudimage.png?sanitize=true">
+		src="https://demo.cloudimg.io/height/350/n/https://cdn.scaleflex.it/filerobot/filerobot-cloudimage.png?sanitize=true">
 </p>
 
 <h1 align="center">
@@ -48,7 +48,7 @@ Cloudimage, contact us at
 <p align="center">
 	<img
 		alt="The Lounge"
-		src="https://demo.cloudimg.io/width/1400/n/https://scaleflex.airstore.io/filerobot/cloudimage-process.jpg?sanitize=true">
+		src="https://demo.cloudimg.io/width/1400/n/https://cdn.scaleflex.it/filerobot/cloudimage-process.jpg?sanitize=true">
 </p>
 
 powered by [Cloudimage](https://www.cloudimage.io/)
@@ -109,7 +109,7 @@ import { AppComponent } from './app.component';
 
 const ciConfig = {
   token: 'demo',
-  baseUrl: 'https://jolipage.airstore.io/'
+  baseUrl: 'https://jolipage.scaleflex.it/'
 };
 
 @NgModule({
@@ -198,7 +198,7 @@ Default:
 ```javascript
 const ciConfig = {
   token: 'demo',
-  baseUrl: 'https://jolipage.airstore.io/',
+  baseUrl: 'https://jolipage.scaleflex.it/',
   ...
   presets: {
       xs: '(max-width: 575px)', // up to 575    PHONE
