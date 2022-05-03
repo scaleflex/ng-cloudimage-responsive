@@ -239,7 +239,14 @@
           <ci-img
             [src]="images[18].src"
             [operation]="'crop'"
-            [size]="'sm 400x200, (min-width: 620px) 200x60, md 250x350, lg 350x300, xl 400x250'"
+            [sizes]="{
+                '(max-width: 575px)': { w: 400, h: 150 },
+                '(min-width): 576px)': { r: 1 },
+                '(min-width: 620px)': { h: 560 },
+                '(min-width: 768px)': { w: '50vw' },
+                '(min-width: 992px)': { w: '55vw', h: 300 },
+                '(min-width: 1200px)': { w: 1200 }
+            }"
           ></ci-img>
           <small>
             original: <i>9.2mb</i> <a
@@ -253,7 +260,7 @@
 &lt;ci-img
   operation="crop"
   [src]="images[18].src"
-  [size]="'
+  [sizes]="'
     sm 400x200,
     (min-width: 620px) 200x60,
     md 250x350,

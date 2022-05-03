@@ -28,6 +28,7 @@
     "@angular/platform-browser": "~13.3.3",
     "@angular/platform-browser-dynamic": "~13.3.3",
     "@angular/router": "~13.3.3",
+    "cloudimage-responsive-utils": "^2.4.9",
     "core-js": "^3.22.1",
     "highlight.js": "^9.18.1",
     "ng-lazyload-image": "^9.1.2",
