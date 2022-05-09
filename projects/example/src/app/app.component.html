@@ -260,13 +260,14 @@
 &lt;ci-img
   operation="crop"
   [src]="images[18].src"
-  [sizes]="'
-    sm 400x200,
-    (min-width: 620px) 200x60,
-    md 250x350,
-    lg 350x300,
-    xl 400x250
-  '"
+  [sizes]="&#123;
+    '(max-width: 575px)'&#58; &#123; w&#58; 400, h&#58; 150 &#125;,
+    '(min-width): 576px)'&#58; &#123; r&#58; 1 &#125;,
+    '(min-width: 620px)'&#58; &#123; h&#58; 560 &#125;,
+    '(min-width: 768px)'&#58; &#123; w&#58; '50vw' &#125;,
+    '(min-width: 992px)'&#58; &#123; w&#58; '55vw', h&#58; 300 &#125;,
+    '(min-width: 1200px)'&#58; &#123; w&#58; 1200 &#125;
+  &#125;"
 &lt;/ci-img&gt;
       </code></pre>
         </div>

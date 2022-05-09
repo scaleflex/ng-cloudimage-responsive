@@ -20,8 +20,6 @@
 	<strong>
 		<a href="#table_of_contents">Docs</a>
 		•
-    <a href="https://github.com/scaleflex/ng-cloudimage-responsive/blob/master/README_v6.md" target="_blank">Documentation for v2 | Cloudimage v6</a>
-		•
 		<a href="https://scaleflex.github.io/ng-cloudimage-responsive/" target="_blank">Demo</a>
 		•
 		<a href="https://codesandbox.io/s/qr6zzr8rj?fontsize=14&module=%2Fsrc%2Fapp%2Fapp.module.ts" target="_blank">Code Sandbox</a>
@@ -102,21 +100,21 @@ of your image storage:
 ```javascript
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { CIModule, CIConfig, CI_CONFIG } from 'ng-cloudimage-responsive';
+import { CIModule, CIConfig } from 'ng-cloudimage-responsive';
 import { AppComponent } from './app.component';
 
-const ciConfig: Partial<CIConfig> = {
+const ciConfig = {
   token: 'demo',
   baseUrl: 'https://jolipage.scaleflex.it/'
 };
 
 @NgModule({
-  declarations: [ AppComponent ],
-  imports: [ BrowserModule, CIModule ],
-  providers: [
-    { provide: CI_CONFIG, useValue: ciConfig }
-  ],
-  bootstrap: [ AppComponent ]
+    declarations: [ AppComponent ],
+    imports: [ BrowserModule, CIModule ],
+    providers: [
+      {provide: CIConfig, useValue: ciConfig}
+    ],
+    bootstrap: [ AppComponent ]
 })
 export class MyAppModule {}
 ```
@@ -145,45 +143,11 @@ Your Cloudimage customer token.
 Cloudimage account to get one. The subscription takes less than a
 minute and is totally free.
 
-### customDomain
-
-###### Type: **String** | Default: **"cloudimage.io"** | _optional_
-
-If you use a custom CNAME for your cloudimage integration, you can set it here.
-
-Note: this will disregard your token above as this should be built into the CNAME entry.
-
 ### baseUrl
 
 ###### Type: **String** | Default: **"/"** | _optional_
 
 Your image folder on server, this alows to shorten your origin image URLs.
-
-### apiVersion
-
-###### Type: **String** | Default: **"v7"** | _optional_
-
-Allow to use a specific version of API.
-
-- set a specific version of API
-
-```javascript
-const token = {
-  token: "demo",
-  baseURL: "https://cdn.scaleflex.it/demo/",
-  apiVersion: "v7", // optional
-};
-```
-
-- disable API version
-
-```javascript
-const token = {
-  token: "demo",
-  baseURL: "https://cdn.scaleflex.it/demo/",
-  apiVersion: null, // optional
-};
-```
 
 ### lazyLoading
 
@@ -199,55 +163,27 @@ Only images close to the client's viewport will be loaded, hence accelerating th
 Preload an image even if it's e.g. 100px below the viewport
 (user have to scroll 100px more to see this image)
 
+### imgLoadingAnimation
+
+###### Type: **Bool** | Default: **true** | _optional_
+
 Applies a nice interlacing effect for preview transition
 
-### params
+### filters
 
-###### Type: **String** | Default: **'org_if_sml=1'** | _optional_
+###### Type: **String** | Default: **'foil1'** | _optional_
 
-Applies default Cloudimage operations/ filters to your image, e.g. brightness, contrast, rotation...
-Multiple params can be applied, separated by "`&`" e.g. wat_scale=35&wat_gravity=northeast&wat_pad=10&grey=1
+Applies default Cloudimage filters to your image, e.g. fcontrast, fpixelate, fgaussian, backtransparent,
+rotation...  Multiple filters can be applied, separated by "```.```" (dot).
 
-```javascript
-params: "org_if_sml=1&grey=1";
-```
+[Full documentation here.](https://docs.cloudimage.io/go/cloudimage-documentation/en/filters/)
 
-#### alternative syntax: type: **Object**
-
-```javascript
-params: {
-    org_if_sml: 1,
-    grey: 1
-}
-```
-
-[Full cloudimage v7 documentation here.](https://docs.cloudimage.io/go/cloudimage-documentation-v7/en/introduction)
 
 ### placeholderBackground
 
 ###### Type: **String** | Default: **'#f4f4f4'** | _optional_
 
-Placeholder coloured background while the image is loading or use it to set your custom placeholder image or gif
-
-For example
-
-```
-placeholderBackground: "url('https:/https://cdn.scaleflex.it/filerobot/red-loader.gif') 50% 50% no-repeat"
-```
-
-### lowQualityPreview
-
-###### Type: **Object**
-
-- `lowQualityPreview.minImgWidth` number (default: 400) - minimum width of an image to load a low-quality preview image
-
-Example:
-
-```javascript
-lowQualityPreview: {
-  minImgWidth = 400;
-}
-```
+Placeholder colored background while the image is loading
 
 ### presets
 
@@ -270,49 +206,7 @@ const ciConfig = {
 };
 ```
 
-Breakpoints shortcuts to use in image size property, can be overridden.
-
-### limitFactor
-
-###### Type: **Number** | Default: **100** | _optional_
-
-Rounds up the size of an image to the nearest limitFactor value.
-
-For example:
-
-- for an image with width **358px** and limitFactor equal to **100**, the plugin will round up to 400px;
-- for an image with width **358px** and limitFactor equal to **5**, the plugin will round up to 360px.
-
-### devicePixelRatioList
-
-###### Type: **[Number,...]** | Default: **[1, 1.5, 2]** | _optional_
-
-List of supported device pixel ratios. If there is no need to support retina devices, you should set an empty array `devicePixelRatioList: []`.
-
-### delay
-
-###### Type: **Number** | _optional_
-
-Delay for processing an image after rendering component.
-
-**NOTE:** normally, the parameter is not needed but in some cases with integrating third-party libraries, it can fix wrong
-calculation of image container.
-
-### ImageSizeAttributes
-
-###### Type: **String** | possible values: 'use', 'ignore', 'take-ratio' | Default: **'use'**
-
-If width and height attributes are set:
-
-**use** - width & height attributes values will be used to calculate image size (according to user's DPR) and **ratio**.
-
-**take-ratio** - width & height attributes values will be used only to calculate **ratio**.
-
-**ignore** - width & height attributes will be ignored.
-
-If width and height attributes are NOT set, image container size will be detected to calculate result image size (according to user's DPR)
-
-_Note_: If only width or height attributes is set, ratio is going to be taken from ci-ratio image attribute
+Breakpoints shortcuts to use in image size property, can be overwridden.
 
 ## <a name="image_properties"></a> Image properties
 
@@ -328,98 +222,112 @@ relative to baseUrl in your config.
 The plugin uses a special algorithm to detect the width of image container and set the image size accordingly.
 This is the recommended way of using the Cloudimage Responsive plugin.
 
+### operation (or o)
 
+###### Type: **String** | Default: **width** | _optional_
 
-### doNotReplaceURL
+Operation allows to customize the behaviour of the plugin for specific images:
 
-###### Type: **bool** | Default: **false**
+**width** - to resize with a specific width. This is useful when you want to have a fixed width, regardless of screen size.
 
-If set to **true** the plugin will only add query params to the given source of image.
+**height** - to resize with a specific height. This is useful when you want to have a fixed height, regardless of screen size.
 
-### disableAnimation
+**crop** - to crop the image around the center
 
-###### Type: **Boolean** | Default: **false** | _optional_
+**fit** - to resize the image in a box and keeping the proportions of the source image
 
-If set, the plugin will disable the animation for the Img and render only a single img tag.
+**cover** - to resize the image in a box without keeping the proportions of the source image
 
-### width
+**NOTES:**
 
-###### Type: **String** (e.g. 300px, 20vw) | Default: **undefined**
+When you use an operation, you must specify the size for each screen size, see below
 
-If set, the plugin will use width as fixed value and change only according to the device pixel ratio.
+Full documentation of all operations available [here](https://docs.cloudimage.io/go/cloudimage-documentation/en/operations/)
 
-### height
+### size (or s)
 
-###### Type: **String** (e.g. 300px, 20vh) | Default: **undefined**
+###### Type: **String** | Default: **undefined** | _optional_ but _required_ when using operation
 
-If it's set, the plugin will use height as fixed value and change only according to the device pixel ratio.
+Size of an image which is used as a base for creating retina ready and responsive image element.
 
-### params
+Examples (PR - stands for your device Pixel Ratio):
 
-###### Type: **String** | Default: **undefined** | _optional_
-
-You can apply any Cloudimage operations/filters to your image, like brightness, contrast, rotation, etc.
-Multiple parameters can be applied, separated by "`&`" e.g. **wat_scale=35&wat_gravity=northeast&wat_pad=10&grey=1**
-
-```javascript
-params = "gray=1&bright=10";
-```
-
-#### alternative syntax: type: **Object**
-
-```javascript
-params={{
-    bright: 10,
-    grey: 1
-}}
-```
-
-[Full cloudimage v7 documentation here.](https://docs.cloudimage.io/go/cloudimage-documentation-v7/en/introduction)
-
-### sizes
-
-###### Type: **Object** | Default: **undefined**
-
-**{preset breakpoint (xs,sm, md,lg,xl) or media query + ' ' + image params}**:
+**[width]**:
 
 ```html
-<ci-img 
-  src="dino-reichmuth-1.jpg" 
-  operation="crop" 
-  sizes={{ 
-    "(max-width: 575px)": { w: 400, h: 150 }, 
-    "(min-width): 576px)": { r: 1 }, 
-    "(min-width: 620px)": { h: 560 }, 
-    "(min-width: 768px)": { w: "50vw" }, 
-    "(min-width: 992px)": { w: "55vw", h: 300 }, 
-    "(min-width: 1200px)": { w: 1200 }
-  }} 
-/>
+<ci-img
+  src="dino-reichmuth-1.jpg"
+  operation="width"
+  size="250"/>
+```
+=> width: 250 * PR (px); height: auto;
+
+**[width x height]**:
+
+```html
+<ci-img
+  src="dino-reichmuth-1.jpg"
+  operation="width"
+  size="125x200"/>
+```
+
+=> width: 125 * PR (px); height: 200 * PR (px);
+
+**[Width and height for different screen resolutions]**:
+
+```html
+<ci-img
+  src="dino-reichmuth-1.jpg"
+  operation="crop"
+  size="
+    sm 800x400,
+    (min-width: 620px) 200x20,
+    md 1000x1350,
+    lg 1400x1200,
+    xl 1600x1000
+"/>
 ```
 
 You can drop some breakpoints, for example:
 
 ```html
-<ci-img 
-  src="dino-reichmuth-1.jpg" 
+<ci-img
+  src="dino-reichmuth-1.jpg"
   operation="crop"
-  sizes={{ 
-    sm: { w: 400, h: 200 }, 
-    "(min-width: 620px)": { w: 200, h: 60 }
-  }} 
-/>
+  size="md 1000x1350, lg 1400x1200"/>
 ```
 
-##### new experimental syntax
-
-md: { w: '40vw', h: 350 } or md: { w: 250, h: '20vh' }
-
-adds possibility to use fixed height or width and change dynamically other dimension
-
 **NOTE:** if size is not set, the plugin uses a special algorithm to
-detect the width of image container and set the image size accordingly. This is the recommended way of using the Cloudimage Responsive plugin.
+detect the width of image container and set the image size accordingly. This is the recommended way of using
+the Cloudimage Responsive plugin.
 
-### ratio
+For example:
+
+```html
+<ci-img src="dino-reichmuth-1.jpg"/>
+```
+
+### filters (or f)
+
+###### Type: **String** | Default: **none** | _optional_
+
+Filters allow you to modify the image's apperance and can be added on top of the resizing features above.
+
+**fgrey** - apply a greyscale filter on the image
+
+**fgaussian[0..10]** - apply a gaussian blur filter on the image
+
+**fcontrast[-100..100]** - apply a contrast filter on the image
+
+**fbright[0..255]** - apply a brightness filter on the image
+
+**fpixelate[0..100]** - apply a pixelate filter on the image
+
+**fradius[0..500]** - create a radius on the corners
+
+Full documentation of all filters available [here](https://docs.cloudimage.io/go/cloudimage-documentation/en/filters/)
+
+### ratio (or r)
 
 ###### Type: **Number** | _optional_
 
@@ -433,6 +341,13 @@ To see the full cloudimage documentation [click here](https://docs.cloudimage.io
 ###### Type: **Bool** | Default: **undefined** | _optional_
 
 Property allows to override global lazyLoading config for specific images.
+
+### emptyOnSsr
+
+###### Type: **Bool** | Default: **false** | _optional_
+
+Allow to specify visibility behavior for SSR. 
+If you use SSR and want to use lazy loading for some images (maybe some images which are not on initial viewport) it's recommended to set emptyOnSsr to true. 
 
 ## <a name="browser_support"></a>Browser support
 

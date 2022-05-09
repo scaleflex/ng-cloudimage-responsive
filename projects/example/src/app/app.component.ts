@@ -8,10 +8,10 @@ import { Component } from '@angular/core';
 export class AppComponent {
   initialization = `import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { CIModule, CIConfig } from 'ng-cloudimage-responsive';
+import { CIModule, CIConfig, CI_CONFIG } from 'ng-cloudimage-responsive';
 import { AppComponent } from './app.component';
 
-const ciConfig = {
+const ciConfig: Partial<CIConfig> = {
   token: 'demo',
   baseUrl: 'https://jolipage.scaleflex.it/'
 };
@@ -20,7 +20,7 @@ const ciConfig = {
     declarations: [ AppComponent ],
     imports: [ BrowserModule, CIModule ],
     providers: [
-      {provide: CIConfig, useValue: ciConfig}
+      {provide: CI_CONFIG, useValue: ciConfig}
     ],
     bootstrap: [ AppComponent ]
 })
