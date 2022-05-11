@@ -1,12 +1,16 @@
-import {TestBed} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
-import {CloudImageService, LibService} from './lib.service';
+import { CIService } from './lib.service';
 
-describe('CloudImageService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+describe('TestService', () => {
+  let service: CIService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(CIService);
+  });
 
   it('should be created', () => {
-    const service: LibService = TestBed.get(CloudImageService);
     expect(service).toBeTruthy();
   });
 });
