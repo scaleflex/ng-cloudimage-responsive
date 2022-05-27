@@ -8,7 +8,7 @@
       #imgElem
       [class]="pictureClassName"
       style="display: block"
-      [style]="imageStyles"
+      [ngStyle]="imageStyles"
       [alt]="pictureAlt"
       [src]="!isSsr ? cloudimgURL : null"
       [srcset]="getcloudimgSRCSET()"
@@ -20,7 +20,7 @@
       #imgElem
       [class]="pictureClassName"
       style="display: block"
-      [style]="imageStyles"
+      [ngStyle]="imageStyles"
       [alt]="pictureAlt"
       [lazyLoad]="!isSsr ? getcloudimgSRCSET() : null"
       [offset]="offset"
@@ -31,14 +31,14 @@
 </ng-template>
 
 <ng-template #pictureTpl>
-  <div #imgElem [class]="pictureClassName" [style]="pictureStyles">
+  <div #imgElem [class]="pictureClassName" [ngStyle]="pictureStyles">
     <ng-container *ngIf="!isLazyLoadingMode; else lazyLoadPictureTpl">
       <div
         *ngIf="preview && operation !== 'bound'"
-        [style]="previewWrapperStyles"
+        [ngStyle]="previewWrapperStyles"
       >
         <img
-          [style]="previewImgStyles"
+          [ngStyle]="previewImgStyles"
           [src]="previewCloudimgURL"
           (load)="onPreviewLoaded($event)"
           alt="low quality preview"
@@ -47,7 +47,7 @@
       </div>
       <img
         [alt]="pictureAlt"
-        [style]="imgStyles"
+        [ngStyle]="imgStyles"
         [src]="!isSsr ? cloudimgURL : null"
         [srcset]="getcloudimgSRCSET()"
         (load)="!isSsr && onImageLoad($event)"
@@ -58,10 +58,10 @@
   <ng-template #lazyLoadPictureTpl>
     <div
       *ngIf="preview && operation !== 'bound'"
-      [style]="previewWrapperStyles"
+      [ngStyle]="previewWrapperStyles"
     >
       <img
-        [style]="previewImgStyles"
+        [ngStyle]="previewImgStyles"
         [lazyLoad]="previewCloudimgURL"
         [offset]="offset"
         (load)="onPreviewLoaded($event)"
@@ -71,7 +71,7 @@
     </div>
     <img
       [alt]="pictureAlt"
-      [style]="imgStyles"
+      [ngStyle]="imgStyles"
       [lazyLoad]="!isSsr ? getcloudimgSRCSET() : null"
       [offset]="offset"
       [useSrcset]="true"

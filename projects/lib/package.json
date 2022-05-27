@@ -16,9 +16,10 @@
   ],
   "peerDependencies": {
     "@angular/core": ">= 8.1.1",
-    "rxjs": "^6.5.2"
+    "rxjs": ">=6.5.2"
   },
   "dependencies": {
-    "ng-lazyload-image": "^7.0.1"
+    "ng-lazyload-image": "^9.1.2",
+    "cloudimage-responsive-utils": "^2.4.9"
   }
 }
