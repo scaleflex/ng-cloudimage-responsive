@@ -52,7 +52,7 @@
 
     <a href="https://www.filerobot.com/" class="robot-icon">
       <img style="width:100%;" id="robot-icon"
-           src="https://demo.cloudimg.io/width/800/foil1/https://scaleflex.airstore.io/filerobot/assets/robot-icon-left.png"
+           src="https://demo.cloudimg.io/v7/https://cdn.scaleflex.it/filerobot/assets/robot-icon-left.png?w=800"
            alt="">
     </a>
   </section>
@@ -110,8 +110,8 @@
       <p>
         We have original image stored via CDN with <strong>6240×4160 px resolution</strong> and
         <strong>8.7 mb size</strong>:
-        <code>https://scaleflex.airstore.io/demo/redcharlie.jpg</code>
-        <a target="_blank" href="https://scaleflex.airstore.io/demo/redcharlie.jpg"> link</a>
+        <code>https://cdn.scaleflex.it/demo/redcharlie.jpg</code>
+        <a target="_blank" href="https://cdn.scaleflex.it/demo/redcharlie.jpg"> link</a>
         In the table below we can see what size and resolution will be loaded depending on the image's container.
       </p>
 
@@ -133,14 +133,14 @@
           <td>1</td>
           <td>400px</td>
           <td>400×267 | 18.7 kb | <a target="_blank"
-                                     href="https://demo.cloudimg.io/width/400/foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg">link</a>
+                                     href="https://demo.cloudimg.io/v7/https://cdn.scaleflex.it/demo/redcharlie.jpg?w=400">link</a>
           </td>
         </tr>
         <tr>
           <td>2</td>
           <td>800px</td>
           <td>800×533 | 58.1 kb | <a target="_blank"
-                                     href="https://demo.cloudimg.io/width/800/foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg">link</a>
+                                     href="https://demo.cloudimg.io/v7/https://cdn.scaleflex.it/demo/redcharlie.jpg?w=800">link</a>
           </td>
         </tr>
 
@@ -151,14 +151,14 @@
           <td>1</td>
           <td>600px</td>
           <td>600×400 | 35.4 kb | <a target="_blank"
-                                     href="https://demo.cloudimg.io/width/600/foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg">link</a>
+                                     href="https://demo.cloudimg.io/v7/https://cdn.scaleflex.it/demo/redcharlie.jpg?w=600">link</a>
           </td>
         </tr>
         <tr>
           <td>2</td>
           <td>1200px</td>
           <td>1200x800 | 119 kb | <a target="_blank"
-                                     href="https://demo.cloudimg.io/width/1200/foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg">link</a>
+                                     href="https://demo.cloudimg.io/v7/https://cdn.scaleflex.it/demo/redcharlie.jpg?w=1200">link</a>
           </td>
         </tr>
 
@@ -170,14 +170,14 @@
           <td>1</td>
           <td>800px</td>
           <td>800×533 | 58.1 kb | <a target="_blank"
-                                     href="https://demo.cloudimg.io/width/800/foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg">link</a>
+                                     href="https://demo.cloudimg.io/v7/https://cdn.scaleflex.it/demo/redcharlie.jpg?w=800">link</a>
           </td>
         </tr>
         <tr>
           <td>2</td>
           <td>1600px</td>
           <td>1600px×1066 | 200 kb | <a target="_blank"
-                                        href="https://demo.cloudimg.io/width/1600/foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg">link</a>
+                                        href="https://demo.cloudimg.io/v7/https://cdn.scaleflex.it/demo/redcharlie.jpg?w=1600">link</a>
           </td>
         </tr>
 
@@ -188,14 +188,14 @@
           <td>1</td>
           <td>1200px</td>
           <td>1200x800 | 119 kb | <a target="_blank"
-                                     href="https://demo.cloudimg.io/width/1200/foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg">link</a>
+                                     href="https://demo.cloudimg.io/v7/https://cdn.scaleflex.it/demo/redcharlie.jpg?w=1200">link</a>
           </td>
         </tr>
         <tr>
           <td>2</td>
           <td>2400px</td>
           <td>2400x1600 | 405 kb | <a target="_blank"
-                                      href="https://demo.cloudimg.io/width/2400/foil1/https://scaleflex.airstore.io/demo/redcharlie.jpg">link</a>
+                                      href="https://demo.cloudimg.io/v7/https://cdn.scaleflex.it/demo/redcharlie.jpg?w=2400">link</a>
           </td>
         </tr>
 
@@ -229,7 +229,7 @@
           <app-container-box></app-container-box>
           <ci-img [src]="image.src" [ratio]="image.ratio"></ci-img>
           original: <i>{{image.original_size}}</i>
-          <a href="{{'https://cloudimage.public.airstore.io/demo/' + image.src}}" target="_blank"> link</a><br/>
+          <a href="{{'https://cloudimage.public.scaleflex.it/demo/' + image.src}}" target="_blank"> link</a><br/>
         </div>
       </div>
 
@@ -238,12 +238,20 @@
           <!--<app-container-box></app-container-box>-->
           <ci-img
             [src]="images[18].src"
+            [ratio]="images[18].ratio"
             [operation]="'crop'"
-            [size]="'sm 400x200, (min-width: 620px) 200x60, md 250x350, lg 350x300, xl 400x250'"
+            [sizes]="{
+                '(max-width: 575px)': { w: 400, h: 150 },
+                '(min-width): 576px)': { r: 1 },
+                '(min-width: 620px)': { h: 560 },
+                '(min-width: 768px)': { w: '50vw' },
+                '(min-width: 992px)': { w: '55vw', h: 300 },
+                '(min-width: 1200px)': { w: 1200 }
+            }"
           ></ci-img>
           <small>
             original: <i>9.2mb</i> <a
-            href="https://cloudimage.public.airstore.io/demo/dino-reichmuth-1.jpg" target="_blank"> link</a><br/>
+            href="https://cloudimage.public.scaleflex.it/demo/dino-reichmuth-1.jpg" target="_blank"> link</a><br/>
           </small>
         </div>
         <div class="col-md-6 col-lg-5 desc-wrapper-with-media-query">
@@ -253,13 +261,14 @@
 &lt;ci-img
   operation="crop"
   [src]="images[18].src"
-  [size]="'
-    sm 400x200,
-    (min-width: 620px) 200x60,
-    md 250x350,
-    lg 350x300,
-    xl 400x250
-  '"
+  [sizes]="&#123;
+    '(max-width: 575px)'&#58; &#123; w&#58; 400, h&#58; 150 &#125;,
+    '(min-width): 576px)'&#58; &#123; r&#58; 1 &#125;,
+    '(min-width: 620px)'&#58; &#123; h&#58; 560 &#125;,
+    '(min-width: 768px)'&#58; &#123; w&#58; '50vw' &#125;,
+    '(min-width: 992px)'&#58; &#123; w&#58; '55vw', h&#58; 300 &#125;,
+    '(min-width: 1200px)'&#58; &#123; w&#58; 1200 &#125;
+  &#125;"
 &lt;/ci-img&gt;
       </code></pre>
         </div>

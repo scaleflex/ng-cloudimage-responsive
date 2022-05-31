@@ -1,109 +1,122 @@
 import {
-  Component, Input, Output, ViewChild, ElementRef, EventEmitter, ChangeDetectorRef, SimpleChanges,
-  OnInit, OnChanges, OnDestroy, AfterViewInit, Inject, PLATFORM_ID
+  imgStyles as styles,
+  processReactNode,
+} from 'cloudimage-responsive-utils';
+import {
+  Component,
+  Input,
+  Output,
+  ViewChild,
+  ElementRef,
+  EventEmitter,
+  SimpleChanges,
+  OnInit,
+  OnChanges,
+  OnDestroy,
+  AfterViewInit,
+  Inject,
+  PLATFORM_ID,
 } from '@angular/core';
 import { CIService } from '../lib.service';
-import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { fromEvent, Observable, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { isPlatformServer } from '@angular/common';
 
 @Component({
-  // tslint:disable-next-line:component-selector
   selector: 'ci-img',
   templateUrl: './img.component.html',
 })
-export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class ImgComponent
+  implements OnInit, OnChanges, AfterViewInit, OnDestroy
+{
   @ViewChild('imgElem') imgElem: ElementRef;
-  @ViewChild('pictureElem') pictureElem: ElementRef;
-  @Input() src: string;
+
   @Input() class = '';
   @Input() alt: string;
-  @Input() operation: string;
-  @Input() o: string;
-  @Input() size: string | {};
-  @Input() s: string | {};
-  @Input() filters: string;
-  @Input() f: string;
-  @Input() ratio: number;
-  @Input() offset = 100;
-  @Input() ngSwitch: any;
-  @Input() lazyLoading: boolean | null = null;
-  @Input() emptyOnSsr = false;
-  @Output() imageLoaded: EventEmitter<any> = new EventEmitter<any>();
 
-  resizeObservable$: Observable<Event>;
-  resizeSubscription$: Subscription;
-  cloudimageUrl = '';
-  sources: any[] = [];
-  firstSource = null;
-  restSources = [];
-  isLoaded = false;
-  isProcessed = false;
-  isPreview: boolean;
-  previewCloudimageUrl: string;
-  previewSources: any[];
-  isAdaptive: boolean;
-  actualSize: string;
-  parentContainerWidth: number;
-  isPreviewLoaded: boolean;
-  isRatio: boolean;
-  ratioBySize: number;
-  imageHeight: number;
-  windowInnerWidth: number;
+  @Input() src: string = '';
+  @Input() doNotReplaceURL = this.ciService.config.doNotReplaceURL;
+  @Input() disableAnimation = false;
+  @Input() width: string;
+  @Input() height: string;
+  @Input() params = this.ciService.config.params;
+  @Input() sizes: { [key: string]: any };
+  @Input() ratio: number;
+  @Input() lazyLoading = this.ciService.config.lazyLoading;
+  @Input() autoAlt = false;
+  @Input() placeholderBackground = this.ciService.config.placeholderBackground;
+  @Input() offset = this.ciService.config.lazyLoadOffset;
+  @Input() preserveSize: boolean;
+  @Input() operation: string;
+
+  @Output() onImgLoad: EventEmitter<Event> = new EventEmitter<Event>();
+
+  // Internal states
+  lowQualityPreview = true;
+  loaded = false;
+  previewLoaded = false;
+  loadedImageDim: {
+    width: number;
+    height: number;
+    ratio: number;
+  };
   isSsr: boolean;
+  processed = false;
+  preview: boolean;
+  cloudimgURL = '';
+  previewCloudimgURL: string;
+  cloudimgSRCSET: { dpr: string; url: any }[];
+  delay = this.ciService.config.delay;
+  resizeObservable$: Observable<Event>;
+  resizeSubscription: Subscription;
+  windowInnerWidthOld: number;
 
   get isLazyLoadingMode(): boolean {
     if (this.isSsr) {
       return false;
     }
 
-    if (typeof this.lazyLoading === 'boolean') {
-      return this.lazyLoading;
-    }
-
-    return this.ciService.config.lazyLoading || false;
+    return this.lazyLoading;
   }
 
   constructor(
     private ciService: CIService,
-    // tslint:disable-next-line:variable-name
-    private _sanitizer: DomSanitizer,
-    private cd: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.isSsr = isPlatformServer(platformId);
-    this.windowInnerWidth = this.ciService.getWindowInnerWidth();
+    this.isSsr = isPlatformServer(this.platformId);
+    this.windowInnerWidthOld = this.ciService.getWindowInnerWidth();
   }
 
   ngOnDestroy(): void {
     if (!this.isSsr) {
-      this.resizeSubscription$.unsubscribe();
+      this.resizeSubscription.unsubscribe();
     }
   }
 
   ngOnInit(): void {
     if (!this.isSsr) {
-      this.resizeObservable$ = fromEvent(window, 'resize').pipe(debounceTime(500));
-      this.resizeSubscription$ = this.resizeObservable$.subscribe(() => {
+      this.resizeObservable$ = fromEvent(window, 'resize').pipe(
+        debounceTime(500)
+      );
+      this.resizeSubscription = this.resizeObservable$.subscribe(() => {
         const windowInnerWidth = this.ciService.getWindowInnerWidth();
 
-        /**
-         * Don't need to re-process image on window resize in isLazyLoadingMode, because it's provide an issue
-         * in <source [attr.lazyLoad] />. After image re-processed source elements lose srcset attritute and
-         * as the result user see not correct image.
-         */
-        if (!this.isLazyLoadingMode && (this.isAdaptive || this.windowInnerWidth < windowInnerWidth)) {
-          this.processImage();
-        }
-        this.windowInnerWidth = windowInnerWidth;
+        this.processImage(true, this.windowInnerWidthOld < windowInnerWidth);
+
+        this.windowInnerWidthOld = windowInnerWidth;
       });
     }
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const srcChanged = changes.src && changes.src.previousValue !== changes.src.currentValue && !changes.src.firstChange;
-    const ratioChanged = changes.ratio && changes.ratio.previousValue !== changes.ratio.currentValue && !changes.ratio.firstChange;
+    const srcChanged =
+      changes.src &&
+      changes.src.previousValue !== changes.src.currentValue &&
+      !changes.src.firstChange;
+    const ratioChanged =
+      changes.ratio &&
+      changes.ratio.previousValue !== changes.ratio.currentValue &&
+      !changes.ratio.firstChange;
 
     if (srcChanged || ratioChanged) {
       this.processImage();
@@ -111,201 +124,141 @@ export class ImgComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy
   }
 
   ngAfterViewInit(): void {
-    this.processImage();
-  }
-
-  processImage(): void {
-    const imgNode = (this.imgElem || this.pictureElem).nativeElement;
-    const {config = {}} = this.ciService;
-    const {previewQualityFactor} = config;
-    const operation = this.operation || this.o || config.operation;
-    const parentContainerWidth = this.ciService.getParentWidth(imgNode, config);
-    let size = this.size || this.s || config.size || parentContainerWidth;
-    const filters = this.filters || this.f || config.filters;
-    const isAdaptive = this.ciService.checkOnMedia(size);
-
-    size = isAdaptive ? this.ciService.getAdaptiveSize(size, config) : size;
-
-    const isRelativeUrlPath = this.ciService.checkIfRelativeUrlPath(this.src);
-    const imgSrc = this.ciService.getImgSrc(this.src, isRelativeUrlPath, config.baseUrl);
-    const resultSize = isAdaptive ? size : this.ciService.getSizeAccordingToPixelRatio(size);
-    this.isPreview = !config.isChrome && (parentContainerWidth > 400) && this.isLazyLoadingMode;
-    this.cloudimageUrl = isAdaptive ?
-      this.ciService.generateUrl('width', this.ciService.getSizeAccordingToPixelRatio(parentContainerWidth), filters, imgSrc, config) :
-      this.ciService.generateUrl(operation, resultSize, filters, imgSrc, config);
-    this.sources = isAdaptive ?
-      this.ciService.generateSources(operation, resultSize, filters, imgSrc, isAdaptive, config, false) : [];
-    let previewCloudimageUrl;
-    let previewSources;
-
-    if (this.isPreview) {
-      const previewConfig = {...config, queryString: ''};
-      previewCloudimageUrl = isAdaptive ?
-        this.ciService.generateUrl('width', (Math.floor(parentContainerWidth / previewQualityFactor)), filters, imgSrc, previewConfig) :
-        this.ciService.generateUrl(
-          operation,
-          resultSize.split('x').map(item => Math.floor(item / previewQualityFactor)).join('x'),
-          filters,
-          imgSrc,
-          previewConfig
-        );
-      previewSources = isAdaptive ?
-        this.ciService.generateSources(operation, resultSize, filters, imgSrc, isAdaptive, previewConfig, true) : [];
-    }
-
-    this.previewCloudimageUrl = previewCloudimageUrl;
-    this.previewSources = previewSources;
-    this.isAdaptive = isAdaptive;
-    this.actualSize = size;
-    this.parentContainerWidth = parentContainerWidth;
-    const ratioBySize = this.ciService.getRatioBySize(size, config);
-    this.imageHeight = Math.floor(parentContainerWidth / (ratioBySize || this.ratio || 1.5));
-    this.isRatio = !!(ratioBySize || this.ratio);
-    this.ratioBySize = ratioBySize;
-
-    this.isProcessed = true;
-    this.cd.detectChanges();
-  }
-
-  onImageLoad($event): void {
-    if (!this.isPreview) {
-      this.isPreviewLoaded = true;
-      this.isLoaded = true;
-    } else if (this.isPreviewLoaded) {
-      this.isLoaded = true;
+    if (!this.isSsr) {
+      setTimeout(() => {
+        this.processImage();
+      }, this.delay);
     } else {
-      this.isPreviewLoaded = true;
+      this.processImage();
     }
-    this.imageLoaded.emit($event);
   }
 
-  getRestSources(): object[] {
-    const resultSources = [...(!this.isPreview ? this.sources : (this.isPreviewLoaded ? this.sources : this.previewSources))];
+  onImageLoad(event: Event) {
+    this.updateLoadedImageSize(event.target as HTMLImageElement);
+    this.loaded = true;
 
-    return resultSources.slice(1).reverse();
+    this.onImgLoad.emit(event);
   }
 
-  getFirstSource(): object {
-    const resultSources = [...(!this.isPreview ? this.sources : (this.isPreviewLoaded ? this.sources : this.previewSources))];
-    this.firstSource = resultSources[0];
+  onPreviewLoaded(event: Event) {
+    if (this.previewLoaded) return;
 
-    return resultSources[0];
+    this.updateLoadedImageSize(event.target as HTMLImageElement);
+    this.previewLoaded = true;
   }
 
-  getPositionStyle(): SafeStyle {
-    return this._sanitizer.bypassSecurityTrustStyle(this.isRatio ? 'absolute' : 'relative');
-  }
-
-  getImgHeight(): SafeStyle {
-    // todo check if we need 100% height
-    // return this._sanitizer.bypassSecurityTrustStyle(this.isRatio ? '100%' : 'auto');
-    return this._sanitizer.bypassSecurityTrustStyle(this.isRatio ? 'auto' : 'auto');
-  }
-
-  getTransformStyle(): SafeStyle {
-    const {config} = this.ciService;
-    let result = 'none';
-
-    if (config.imgLoadingAnimation) {
-      result = 'scale3d(1.1, 1.1, 1)';
+  getcloudimgSRCSET() {
+    if (this.cloudimgSRCSET && !this.isSsr) {
+      return this.cloudimgSRCSET
+        .map(({ dpr, url }) => `${url} ${dpr}x`)
+        .join(', ');
     }
 
-    if (this.isLoaded && config.imgLoadingAnimation) {
-      result = 'translateZ(0) scale3d(1, 1, 1)';
-    }
-
-    return this._sanitizer.bypassSecurityTrustStyle(result);
+    return null;
   }
 
-  getTransitionStyle(): SafeStyle {
-    const {config} = this.ciService;
-    let result = 'none';
-
-    if (this.isLoaded && config.imgLoadingAnimation) {
-      result = 'all 0.3s ease-in-out';
-    }
-
-    return this._sanitizer.bypassSecurityTrustStyle(result);
+  get pictureAlt() {
+    return (!this.alt && this.autoAlt ? this.getAlt(this.src) : this.alt) || '';
   }
 
-  getFilterStyle(): SafeStyle {
-    const {config} = this.ciService;
-    let result = 'none';
-
-    if (config.imgLoadingAnimation) {
-      result = `blur(${Math.floor(parseInt(this.parentContainerWidth + '', 10) / 100)}px)`;
-    }
-
-    if (this.isLoaded && config.imgLoadingAnimation) {
-      result = 'blur(0px)';
-    }
-
-    return this._sanitizer.bypassSecurityTrustStyle(result);
+  get previewWrapperStyles() {
+    return styles.previewWrapper();
   }
 
-  getPicturePaddingBottom(): SafeStyle {
-    let result = '';
-
-    if (this.isRatio) {
-      result = (100 / (this.ratioBySize || this.ratio)) + '%';
-    }
-
-    return this._sanitizer.bypassSecurityTrustStyle(result);
-  }
-
-  getImagePaddingBottom(): SafeStyle {
-    let result = '';
-
-    if (this.isRatio && !this.isLoaded) {
-      result = (100 / (this.ratioBySize || this.ratio)) + '%';
-    }
-
-    return this._sanitizer.bypassSecurityTrustStyle(result);
-  }
-
-  getPictureBackground(): SafeStyle {
-    const {config} = this.ciService;
-    let result = 'transparent';
-
-    if (this.isRatio && !this.isPreviewLoaded && !this.isLoaded) {
-      result = config.placeholderBackground;
-    }
-
-    return this._sanitizer.bypassSecurityTrustStyle(result);
-  }
-
-  getBasicImageStyles(): SafeStyle {
-    const {config = {}} = this.ciService;
-    const operation = this.operation || this.o || config.operation;
-    let display = 'block';
-    let width;
-    let left = '0';
-    let maxWidth;
-    let maxHeight;
-
-    if (operation === 'fit') {
-      display = 'flex';
-      maxWidth = '100%';
-      maxHeight = '100%';
-      left = 'auto';
-    } else {
-      width = '100%';
-    }
-
-    const styles = {
-      display,
-      top: '0',
-      left,
-      width,
-      'max-width': maxWidth,
-      'max-height': maxHeight,
-      opacity: '1',
-      'box-sizing': 'content-box',
+  get imgStyles() {
+    return {
+      ...styles.img({
+        preview: this.preview,
+        loaded: this.loaded,
+        operation: this.operation,
+      }),
+      transition: 'transform 400ms ease 0ms',
     };
+  }
 
-    return Object.keys(styles)
-      .filter(propName => styles[propName])
-      .map(propName => `${propName}:${styles[propName]};`)
-      .join('');
+  get imageStyles() {
+    return styles.image({
+      preserveSize: this.preserveSize,
+      imgNodeWidth: this.width,
+      imgNodeHeight: this.height,
+      operation: this.operation,
+    });
+  }
+
+  get previewImgStyles() {
+    return {
+      ...styles.previewImg({
+        loaded: this.loaded,
+        operation: this.operation,
+      }),
+      transition: 'opacity 400ms ease',
+    };
+  }
+
+  get pictureStyles() {
+    return styles.picture({
+      preserveSize: this.preserveSize,
+      imgNodeWidth: this.width,
+      imgNodeHeight: this.height,
+      ratio: this.ratio || this.loadedImageDim?.ratio,
+      previewLoaded: this.previewLoaded,
+      loaded: this.loaded,
+      placeholderBackground: this.placeholderBackground,
+      operation: this.operation,
+    });
+  }
+
+  get pictureClassName() {
+    return `${this.class} cloudimage-image ${
+      this.loaded ? 'loaded' : 'loading'
+    }`.trim();
+  }
+
+  private updateLoadedImageSize(image: HTMLImageElement) {
+    this.loadedImageDim = {
+      width: image.naturalWidth,
+      height: image.naturalHeight,
+      ratio: image.naturalWidth / image.naturalHeight,
+    };
+  }
+
+  private getAlt(name: string) {
+    if (!name) return;
+
+    const index = name.indexOf('.');
+    return name.slice(0, index);
+  }
+
+  private getProps() {
+    return {
+      src: this.src,
+      width: this.width,
+      height: this.height,
+      ratio: this.ratio,
+      params: this.params,
+      sizes: this.sizes,
+      doNotReplaceURL: this.doNotReplaceURL,
+      config: this.ciService.config,
+    };
+  }
+
+  private processImage(update = false, windowScreenBecomesBigger = false) {
+    const imgNode = this.imgElem.nativeElement;
+
+    const data = processReactNode(
+      this.getProps(),
+      imgNode,
+      update,
+      windowScreenBecomesBigger
+    );
+
+    if (data) {
+      this.cloudimgURL = data.cloudimgURL;
+      this.previewCloudimgURL = data.previewCloudimgURL;
+      (this.cloudimgSRCSET = data.cloudimgSRCSET),
+        (this.processed = data.processed);
+      this.preview = data.preview;
+      this.operation = data.operation;
+    }
   }
 }
