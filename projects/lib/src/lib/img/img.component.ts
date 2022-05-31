@@ -166,11 +166,14 @@ export class ImgComponent
   }
 
   get imgStyles() {
-    return styles.img({
-      preview: this.preview,
-      loaded: this.loaded,
-      operation: this.operation,
-    });
+    return {
+      ...styles.img({
+        preview: this.preview,
+        loaded: this.loaded,
+        operation: this.operation,
+      }),
+      transition: 'transform 400ms ease 0ms',
+    };
   }
 
   get imageStyles() {
@@ -183,10 +186,13 @@ export class ImgComponent
   }
 
   get previewImgStyles() {
-    return styles.previewImg({
-      loaded: this.loaded,
-      operation: this.operation,
-    });
+    return {
+      ...styles.previewImg({
+        loaded: this.loaded,
+        operation: this.operation,
+      }),
+      transition: 'opacity 400ms ease',
+    };
   }
 
   get pictureStyles() {
