@@ -1,4 +1,4 @@
-[![Release](https://img.shields.io/badge/release-v2.1.6-blue.svg)](https://github.com/scaleflex/ng-cloudimage-responsive/releases)
+[![Release](https://img.shields.io/badge/release-v3.0.1-blue.svg)](https://github.com/scaleflex/ng-cloudimage-responsive/releases)
 [![Free plan](https://img.shields.io/badge/price-includes%20free%20plan-green.svg)](https://www.cloudimage.io/en/home#b38181a6-b9c8-4015-9742-7b1a1ad382d5)
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)](#contributing)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -6,10 +6,11 @@
 [![Cloudimage](https://img.shields.io/badge/Powered%20by-cloudimage-blue)](https://www.cloudimage.io/en/home)
 
 <p align="center">
-	<img
-		height="175"
-		alt="The Lounge"
-		src="https://demo.cloudimg.io/v7/https://cdn.scaleflex.it/filerobot/filerobot-cloudimage.png?h=350">
+<a href="https://www.cloudimage.io/#gh-light-mode-only">
+		<img
+			alt="The Lounge"
+			src="https://scaleflex.cloudimg.io/v7/cloudimage.io/LOGO+WITH+SCALEFLEX-01.png?vh=f6080d&w=350">
+	</a>
 </p>
 
 <h1 align="center">

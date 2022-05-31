@@ -27,7 +27,7 @@ Types of changes:
 - ...
 
 -------------
-## 3.0.0 - 2022-05-11
+## 3.0.1 - 2022-05-31
 ### Added
 - new property: **customDomain**
 - new property: **apiVersion**
