@@ -27,7 +27,7 @@ Types of changes:
 - ...
 
 -------------
-## 3.0.2 - 2022-08-10
+## 4.0.0 - 2022-08-10
 ### Changed
 - Update Angular 13 -> 14
 - **BREAKING**: the library might not work with Angular version < 14
