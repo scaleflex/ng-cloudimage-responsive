@@ -56,6 +56,7 @@ Cloudimage, contact us at
 ## Table of contents
 
 * [Demo](#demo)
+* [Compatibility](#compatibility)
 * [Requirements](#requirements)
 * [Step 1: Installation](#installation)
 * [Step 2: Initialize](#initialize)
@@ -78,7 +79,14 @@ Inspector's Network tab to see how Cloudimage delivers the optimal
 image size to your browser, hence accelerating the overall page
 loading time.
 
-## <a name="requirements"/> Requirements
+
+## <a name="compatibility"></a> Compatibility
+| Version | Angular Version |
+|---------|--------------|
+| >3.0.1   | >=14.0.0 |
+| <=3.0.1   | <=13.x.x |
+
+## <a name="requirements"></a> Requirements
 
 To use the Cloudimage Responsive plugin, you will need a
 Cloudimage token to deliver your images over CDN. Don't worry, it only takes seconds to get one by
