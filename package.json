@@ -1,6 +1,6 @@
 {
   "name": "ng-cloudimage-responsive",
-  "version": "3.0.1",
+  "version": "4.0.1",
   "scripts": {
     "ng": "ng",
     "start": "npm run build_lib && ng serve",
