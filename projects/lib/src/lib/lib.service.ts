@@ -25,7 +25,6 @@ export class CIService {
     doNotReplaceURL: boolean;
     limitFactor: number;
     devicePixelRatioList: number[];
-    autoAlt: boolean;
     previewQualityFactor: number;
     minLowQualityWidth: number;
     delay: number;
@@ -56,7 +55,6 @@ export class CIService {
       limitFactor = 100,
       devicePixelRatioList = CONSTANTS.DEVICE_PIXEL_RATIO_LIST,
       lowQualityPreview: { minImgWidth = 250 } = {},
-      autoAlt = false,
       delay,
     } = ciConfig;
 
@@ -87,7 +85,6 @@ export class CIService {
       limitFactor,
       minLowQualityWidth: minImgWidth,
       imageSizeAttributes,
-      autoAlt,
       delay,
     };
   }

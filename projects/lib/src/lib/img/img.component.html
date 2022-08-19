@@ -41,7 +41,7 @@
           [ngStyle]="previewImgStyles"
           [src]="previewCloudimgURL"
           (load)="onPreviewLoaded($event)"
-          alt="low quality preview"
+          [alt]="lowQualityPreviewAlt"
           class="cloudimage-preview-image"
         />
       </div>
@@ -65,7 +65,7 @@
         [lazyLoad]="previewCloudimgURL"
         [offset]="offset"
         (load)="onPreviewLoaded($event)"
-        alt="low quality preview"
+        [alt]="lowQualityPreviewAlt"
         class="cloudimage-preview-image"
       />
     </div>

@@ -1,6 +1,7 @@
 import {
   imgStyles as styles,
   processReactNode,
+  generateAlt,
 } from 'cloudimage-responsive-utils';
 import {
   Component,
@@ -43,7 +44,6 @@ export class ImgComponent
   @Input() sizes: { [key: string]: any };
   @Input() ratio: number;
   @Input() lazyLoading = this.ciService.config.lazyLoading;
-  @Input() autoAlt = false;
   @Input() placeholderBackground = this.ciService.config.placeholderBackground;
   @Input() offset = this.ciService.config.lazyLoadOffset;
   @Input() preserveSize: boolean;
@@ -158,7 +158,11 @@ export class ImgComponent
   }
 
   get pictureAlt() {
-    return (!this.alt && this.autoAlt ? this.getAlt(this.src) : this.alt) || '';
+    return this.alt || generateAlt(this.src);
+  }
+
+  get lowQualityPreviewAlt() {
+    return 'low quality preview for ' + this.pictureAlt
   }
 
   get previewWrapperStyles() {
