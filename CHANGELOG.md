@@ -28,7 +28,7 @@ Types of changes:
 
 -------------
 
-## 4.0.1 - 2022-08-10
+## 4.0.1 - 2022-08-19
 ### Changed
 - Update dependencies
 
