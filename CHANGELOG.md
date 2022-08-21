@@ -26,6 +26,13 @@ Types of changes:
 
 - ...
 
+
+-------------
+
+## 4.0.2 - 2022-08-19
+### Removed
+- Property **autoAlt** is removed
+
 -------------
 
 ## 4.0.1 - 2022-08-19

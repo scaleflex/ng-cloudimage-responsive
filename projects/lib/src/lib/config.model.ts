@@ -29,6 +29,5 @@ export interface CIConfig {
   lowQualityPreview: {
     minImgWidth: number;
   };
-  autoAlt: boolean;
   delay: number;
 }
