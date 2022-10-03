@@ -25,7 +25,7 @@
 		•
 		<a href="https://scaleflex.github.io/ng-cloudimage-responsive/" target="_blank">Demo</a>
 		•
-		<a href="https://codesandbox.io/s/ng-cloudimage-responsive-example-dy74h2?file=/src/app/app.module.ts" target="_blank">Code Sandbox</a>
+		<a href="https://codesandbox.io/s/ng-cloudimage-responsive-v3-rtn0vd?file=/src/app/app.module.ts" target="_blank">Code Sandbox</a>
 		•
 		<a href="https://medium.com/@dmitry_82269/responsive-images-in-2019-now-easier-than-ever-b76e5a43c074" target="_blank">Why?</a>
 	</strong>
@@ -141,7 +141,7 @@ Finally, just use the ci-img component:
 NOTE: "ratio" is recommended to prevent page layout jumping. The parameter is used to calculate image height to hold
 the image position while image is loading.
 
-<a href="https://codesandbox.io/s/ng-cloudimage-responsive-example-dy74h2?file=/src/app/app.module.ts"><img src="https://codesandbox.io/static/img/play-codesandbox.svg" alt="edeit in codesandbox"/></a>
+<a href="https://codesandbox.io/s/ng-cloudimage-responsive-v3-rtn0vd?file=/src/app/app.module.ts"><img src="https://codesandbox.io/static/img/play-codesandbox.svg" alt="edeit in codesandbox"/></a>
 
 ## <a name="configuration"></a> Config
 
