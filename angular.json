@@ -116,33 +116,12 @@
             "polyfills": "projects/example/src/polyfills.ts",
             "tsConfig": "projects/example/tsconfig.spec.json",
             "karmaConfig": "projects/example/karma.conf.js",
-            "styles": [
-              "projects/example/src/styles.css"
-            ],
+            "styles": ["projects/example/src/styles.css"],
             "scripts": [],
             "assets": [
               "projects/example/src/favicon.ico",
               "projects/example/src/assets"
             ]
-          }
-        }
-      }
-    },
-    "example-e2e": {
-      "root": "projects/example-e2e/",
-      "projectType": "application",
-      "prefix": "",
-      "architect": {
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/example-e2e/protractor.conf.js",
-            "devServerTarget": "example:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "example:serve:production"
-            }
           }
         }
       }
