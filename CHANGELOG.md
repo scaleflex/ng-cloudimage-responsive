@@ -34,6 +34,9 @@ Types of changes:
 - Property **autoAlt** is removed
 
 -------------
+## 4.0.2 - 2023-05-02
+### Fixed
+- Remove CVE vulnerabilities
 
 ## 4.0.1 - 2022-08-19
 ### Changed
